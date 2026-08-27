@@ -743,7 +743,7 @@
   <!-- INFO / HOW TO UPDATE -->
   <details class="info-panel">
     <summary>How this dashboard gets updated (read before showing to leadership)</summary>
-    <p><strong>Data Conversion</strong> reflects the latest Jira export ("Concourse_-_Jira_2026-08-25T21_35_26_0000.csv", UPS FCE Wave 3 / Release 1 / Test Cycle P2). The <strong>P2 Prep</strong> tab is a placeholder — Matias is still finalizing the P2 prep item list and dates; once that's ready it'll get built out with the same structure.</p>
+    <p><strong>Data Conversion</strong> reflects the latest Jira export ("Concourse - Jira 2026-08-27T17_11_00+0000.csv", UPS FCE Wave 3 / Test Cycle P2 — 112 conversion sub-tasks rolled up into 14 objects). The <strong>P2 Prep</strong> tab is a placeholder — Matias is still finalizing the P2 prep item list and dates; once that's ready it'll get built out with the same structure. Defects were not in this export, so that table is still from the prior defect file.</p>
     <p>Until Jira is reachable from outside the network, this dashboard is intended to run on <strong>manually refreshed data</strong>:</p>
     <ul>
       <li>Every record lives in one JavaScript array (<code>CONVERSION_DATA</code>) near the top of this file's <code>&lt;script&gt;</code> block.</li>
@@ -828,18 +828,16 @@ const CONVERSION_DATA = [
 
   // =========================================================================
   // EXECUTION PHASE — sourced from Jira export
-  // "Concourse_-_Jira_2026-08-18T15_58_10-0400.csv" (UPS FCE Wave 3, Release 1,
-  // Test Cycle P2). Jira sub-tasks rolled up into conversion objects (8
+  // "Concourse - Jira 2026-08-27T17_11_00+0000.csv" (UPS FCE Wave 3, Test Cycle
+  // P2). 112 Conversion-labeled sub-tasks rolled up into 14 objects (8
   // sub-tasks each: Extract Data -> Profile Data -> Validate Profiling
   // Report -> Generate Load Files (FBDI) -> Approve to Load -> Load Data ->
-  // Generate Recon Report -> Perform Post Load Validation & Sign-Off). That
-  // 8-step sequence is now the Execution checklist below, replacing the
-  // earlier placeholder checklist. "key" is Jira's Custom field (ID#), the
-  // RICEFW/object code, since it identifies the object better than a single
-  // sub-task's issue key. The "environment" field (shown in the table as
-  // "Source") reflects the actual Jira mock/round codes (P590, ACC, BLK)
-  // rather than the earlier placeholder CRP2/SIT2/UAT1 labels — ask the team
-  // what these map to if that matters for the deck.
+  // Generate Recon Report -> Perform Post Load Validation & Sign-Off).
+  // "key" is Jira's Custom field (ID#). "environment" is the mock/round
+  // code from that ID (P590, ACC, BLK). A step is done only when Jira Status
+  // is Completed/Resolved — In Progress does not count as done. Owner is the
+  // most frequent assignee on the technical steps (Extract/Profile/FBDI/Load/
+  // Recon), matching the prior dashboard convention.
   // =========================================================================
   { key:"FCE-CNV-P590-AP-INV-0358", object:"Open AP Invoices", subledger:"AP", phase:"Execution", status:"Not Started", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-10-28", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-06"},{label:"Profile Data",done:false,dueDate:"2026-10-06"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-09"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-12"},{label:"Approve to Load",done:false,dueDate:"2026-10-13"},{label:"Load Data",done:false,dueDate:"2026-10-20"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-21"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-28"}] },
@@ -847,12 +845,12 @@ const CONVERSION_DATA = [
     checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-26"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-08-27"},{label:"Approve to Load",done:false,dueDate:"2026-08-28"},{label:"Load Data",done:false,dueDate:"2026-09-04"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-08"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-15"}] },
 
   { key:"FCE-CNV-P590-FA-ASSET-0355", object:"Fixed Assets", subledger:"FA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-16", priority:"Medium", blocker:"",
-    checklist:[{label:"Extract Data",done:false,dueDate:"2026-08-26"},{label:"Profile Data",done:false,dueDate:"2026-08-26"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-31"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-01"},{label:"Approve to Load",done:false,dueDate:"2026-09-02"},{label:"Load Data",done:false,dueDate:"2026-09-08"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-09"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-16"}] },
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-26"},{label:"Profile Data",done:true,dueDate:"2026-08-26"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-31"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-01"},{label:"Approve to Load",done:false,dueDate:"2026-09-02"},{label:"Load Data",done:false,dueDate:"2026-09-08"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-09"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-16"}] },
 
   { key:"FCE-CNV-ACC-PRJ-TASK-0347", object:"Project and Project Task", subledger:"PA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"ACC", dueDate:"2026-09-08", priority:"Medium", blocker:"",
-    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:false,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:true,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
   { key:"FCE-CNV-P590-PRJ-TASK-0465", object:"Project and Project Task", subledger:"PA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-08", priority:"Medium", blocker:"",
-    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:false,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:true,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
 
   { key:"FCE-CNV-ACC-PRJ-BDGT-0348", object:"Project Budget", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"ACC", dueDate:"2026-09-21", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-01"},{label:"Profile Data",done:false,dueDate:"2026-09-01"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-03"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-04"},{label:"Approve to Load",done:false,dueDate:"2026-09-08"},{label:"Load Data",done:false,dueDate:"2026-09-11"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-14"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-21"}] },
@@ -867,11 +865,6 @@ const CONVERSION_DATA = [
   { key:"FCE-CNV-P590-PRJ-EXP-0363", object:"Project Expenditures", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-11-04", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-14"},{label:"Profile Data",done:false,dueDate:"2026-10-14"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-19"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-20"},{label:"Approve to Load",done:false,dueDate:"2026-10-21"},{label:"Load Data",done:false,dueDate:"2026-10-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-11-04"}] },
 
-  // ---- PO: Purchasing (added on request — Purchase Orders, PO Receipts, Item
-  // Master. Not one of the three subledgers UPS is implementing (AP/FA/PA),
-  // but included since these conversion objects were in the same Jira export.
-  // Cash Management (bank accounts) was also in the export and is still
-  // excluded — say the word if you want that added as its own module too. ----
   { key:"FCE-CNV-P590-PO-PUR-0356", object:"Open Purchase Orders", subledger:"PO", phase:"Execution", status:"Not Started", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-09-28", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-08"},{label:"Profile Data",done:false,dueDate:"2026-09-08"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-11"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-14"},{label:"Approve to Load",done:false,dueDate:"2026-09-15"},{label:"Load Data",done:false,dueDate:"2026-09-18"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-21"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-28"}] },
 
@@ -879,13 +872,10 @@ const CONVERSION_DATA = [
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-22"},{label:"Profile Data",done:false,dueDate:"2026-09-22"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-25"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-28"},{label:"Approve to Load",done:false,dueDate:"2026-09-29"},{label:"Load Data",done:false,dueDate:"2026-10-02"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-05"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-12"}] },
 
   { key:"FCE-CNV-P590-INV-ITEM-0354", object:"Item Master", subledger:"PO", phase:"Execution", status:"In Progress", owner:"alinesch@ups.com", environment:"P590", dueDate:"2026-09-04", priority:"Medium", blocker:"",
-    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-24"},{label:"Approve to Load",done:false,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-04"}] },
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-24"},{label:"Approve to Load",done:true,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-04"}] },
 
-  // ---- CM: Cash Management (added on request — Internal Banks, Branches
-  // and Accounts. Also not one of the core AP/FA/PA subledgers, but present
-  // in the same Jira export. ----
   { key:"FCE-CNV-P590-CM-BANK-0353", object:"Internal Banks, Branches and Accounts", subledger:"CM", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-08", priority:"Medium", blocker:"",
-    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-08-24"},{label:"Approve to Load",done:false,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-24"},{label:"Approve to Load",done:true,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
 ];
 
 /* =========================================================================
@@ -959,7 +949,7 @@ function pctComplete(row){
   return Math.round((done/row.checklist.length)*100);
 }
 
-const TODAY = new Date("2026-08-25");
+const TODAY = new Date("2026-08-27");
 function daysUntil(dateStr){
   if(!dateStr) return 9999; // no due date on file — don't treat as urgent/overdue
   const d = new Date(dateStr);
