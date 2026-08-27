@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle Cloud Conversion Tracker — AP / FA / PA — P2 Cycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brown-950:#22120C;
+    --brown-900:#331B12;
+    --brown-800:#4A2C1E;
+    --brown-700:#6B4530;
+    --brown-500:#8F6547;
+    --gold-500:#FFB500;
+    --gold-600:#E6A200;
+    --gold-100:#FFF3D6;
+    --cream-50:#F8F5EF;
+    --cream-100:#F0EAE0;
+    --cream-200:#E4DBCC;
+    --ink-900:#241813;
+    --ink-600:#5A4B40;
+    --gray-500:#8A8378;
+    --line:#DED2BE;
+
+    --c-complete:#1F7A46;
+    --c-complete-bg:#E4F3E9;
+    --c-progress:#B8790A;
+    --c-progress-bg:#FCEDD2;
+    --c-blocked:#B23A3A;
+    --c-blocked-bg:#FBE4E4;
+    --c-notstarted:#736A5E;
+    --c-notstarted-bg:#EBE6DC;
+
+    --stage-done:#1E3A5F;
+    --stage-ontrack:#2E7D46;
+    --stage-atrisk:#E8B93B;
+    --stage-atrisk-ink:#5A4300;
+
+    --radius:10px;
+    --shadow:0 1px 2px rgba(34,18,12,0.06), 0 4px 14px rgba(34,18,12,0.05);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream-50);
+    color:var(--ink-900);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    letter-spacing:0.01em;
+  }
+  code, .mono{
+    font-family:'IBM Plex Mono',monospace;
+  }
+  a{color:inherit;}
+
+  /* ===== Skip link / focus ===== */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+    outline:3px solid var(--gold-500);
+    outline-offset:2px;
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar{
+    background:linear-gradient(180deg,var(--brown-950),var(--brown-900) 90%);
+    border-bottom:4px solid var(--gold-500);
+    color:#fff;
+    padding:0 24px;
+  }
+  .topbar-inner{
+    max-width:1360px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:14px 0;
+    flex-wrap:wrap;
+  }
+  .badge-shield{
+    width:46px;height:52px;
+    background:var(--gold-500);
+    border-radius:8px 8px 22px 22px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,0.12);
+  }
+  .badge-shield span{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:800;
+    color:var(--brown-950);
+    font-size:15px;
+    letter-spacing:0.02em;
+  }
+  .brandblock{display:flex;flex-direction:column;gap:2px;margin-right:auto;}
+  .brandblock .co{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    color:var(--gold-500);
+    font-weight:600;
+  }
+  .brandblock h1{
+    margin:0;
+    font-size:22px;
+    font-weight:700;
+    line-height:1.1;
+    color:#fff;
+  }
+  .brandblock .sub{
+    font-size:12.5px;
+    color:#D9C9B8;
+  }
+  .cycle-pill{
+    background:var(--brown-800);
+    border:1px solid var(--brown-700);
+    color:var(--gold-100);
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 14px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    white-space:nowrap;
+  }
+  .cycle-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold-500);}
+  .placeholder-note{
+    font-size:10.5px;
+    color:#B9A793;
+    max-width:150px;
+    line-height:1.35;
+  }
+
+  /* ===== CONTAINER ===== */
+  .wrap{max-width:1360px;margin:0 auto;padding:26px 24px 60px;}
+
+  /* ===== EXECUTIVE SUMMARY ===== */
+  .exec-summary{
+    background:linear-gradient(180deg,#fff,var(--cream-50));
+    border:1px solid var(--line);
+    border-left:4px solid var(--gold-500);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px 20px;
+    margin-bottom:24px;
+  }
+  .exec-summary-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .exec-summary-head h2{
+    margin:0;
+    font-size:19px;
+    font-weight:700;
+    color:var(--brown-950);
+  }
+  .exec-summary-sub{font-size:12px;color:var(--gray-500);}
+  .exec-summary-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:20px;
+  }
+  .exec-col-title{
+    font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--brown-700);font-weight:700;margin-bottom:8px;
+  }
+  .exec-col p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-900);}
+  .exec-col ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .exec-col li{font-size:13px;line-height:1.4;color:var(--ink-900);}
+  .exec-col li.exec-empty{color:var(--gray-500);font-style:italic;}
+  .exec-meta{color:var(--gray-500);font-size:12px;}
+  .exec-meta.at-risk{color:var(--c-progress);font-weight:600;}
+  @media (max-width:1150px){
+    .exec-summary-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:640px){
+    .exec-summary-grid{grid-template-columns:1fr;}
+  }
+
+  /* ===== PHASE TABS ===== */
+  .phase-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:22px;
+    border-bottom:1px solid var(--line);
+  }
+  .phase-tab{
+    appearance:none;border:none;background:none;cursor:pointer;
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-size:16px;font-weight:600;
+    color:var(--ink-600);
+    padding:10px 6px 12px;
+    border-bottom:3px solid transparent;
+    margin-bottom:-1px;
+  }
+  .phase-tab.active{
+    color:var(--brown-900);
+    border-bottom-color:var(--gold-500);
+  }
+  .phase-tab .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    background:var(--cream-200);
+    color:var(--ink-600);
+    padding:1px 7px;
+    border-radius:10px;
+    margin-left:7px;
+  }
+  .phase-tab.active .count{background:var(--gold-100);color:var(--brown-900);}
+
+  .prep-placeholder{
+    background:#fff;
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+    padding:40px 24px;
+    text-align:center;
+    margin-bottom:26px;
+  }
+  .prep-placeholder-icon{font-size:28px;margin-bottom:10px;}
+  .prep-placeholder h3{
+    margin:0 0 8px;
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-size:18px;
+    color:var(--brown-950);
+  }
+  .prep-placeholder p{
+    margin:0 auto;
+    max-width:560px;
+    font-size:13.5px;
+    color:var(--ink-600);
+    line-height:1.55;
+  }
+
+  /* ===== KPI ROW ===== */
+  .kpi-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:26px;
+  }
+  .kpi-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .kpi-card::before{
+    content:"";
+    position:absolute;top:0;left:0;bottom:0;width:4px;
+    background:var(--gold-500);
+  }
+  .kpi-card.blocked::before{background:var(--c-blocked);}
+  .kpi-card .kpi-label{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--ink-600);font-weight:600;margin-bottom:6px;
+  }
+  .kpi-card .kpi-value{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-size:32px;font-weight:700;color:var(--brown-950);line-height:1;
+  }
+  .kpi-card .kpi-value small{font-size:16px;color:var(--ink-600);font-weight:600;}
+  .kpi-card .kpi-foot{font-size:12px;color:var(--gray-500);margin-top:6px;}
+
+  /* ===== SUBLEDGER MANIFEST CARDS ===== */
+  .manifests{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:16px;
+    margin-bottom:30px;
+  }
+  .manifest{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .manifest-head{
+    background:var(--brown-900);
+    color:#fff;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    position:relative;
+  }
+  .manifest-head .tag{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:700;font-size:17px;
+  }
+  .manifest-head .route{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--gold-100);
+    opacity:0.85;
+  }
+  .manifest-body{padding:16px;}
+  .manifest-body .count-line{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:13px;color:var(--ink-600);margin-bottom:10px;
+  }
+  .manifest-body .count-line b{color:var(--brown-950);font-family:'IBM Plex Mono',monospace;}
+  .progress-track{
+    height:9px;background:var(--cream-200);border-radius:6px;overflow:hidden;margin-bottom:12px;
+  }
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-600),var(--gold-500));border-radius:6px;}
+  .status-chip-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .status-mini{
+    font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:12px;
+    display:flex;align-items:center;gap:5px;
+  }
+  .status-mini .n{font-family:'IBM Plex Mono',monospace;}
+
+  /* status color utility classes, reused in table too */
+  .s-complete{background:var(--c-complete-bg);color:var(--c-complete);}
+  .s-progress{background:var(--c-progress-bg);color:var(--c-progress);}
+  .s-blocked{background:var(--c-blocked-bg);color:var(--c-blocked);}
+  .s-notstarted{background:var(--c-notstarted-bg);color:var(--c-notstarted);}
+
+  /* ===== RISKS & BLOCKERS ROLLUP ===== */
+  .risk-panel{
+    background:#fff;
+    border:1px solid var(--c-blocked);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    margin-bottom:26px;
+    overflow:hidden;
+  }
+  .risk-panel-head{
+    background:var(--c-blocked-bg);
+    color:var(--c-blocked);
+    padding:10px 16px;
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:700;
+    font-size:15.5px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .risk-panel-head .n{
+    font-family:'IBM Plex Mono',monospace;
+    background:var(--c-blocked);
+    color:#fff;
+    font-size:11.5px;
+    padding:1px 8px;
+    border-radius:10px;
+  }
+  .risk-list{padding:4px 0;}
+  .risk-item{
+    display:grid;
+    grid-template-columns:190px 44px 80px 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:10px 16px;
+    border-bottom:1px solid var(--cream-200);
+    font-size:13px;
+  }
+  .risk-item:last-child{border-bottom:none;}
+  .risk-item .key-cell{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .risk-item .sl-pill{justify-self:start;}
+  .risk-item .defect-tag{justify-self:start;}
+  .risk-item .obj{color:var(--ink-900);font-weight:500;}
+  .risk-empty{padding:14px 16px;color:var(--gray-500);font-size:13px;}
+  @media (max-width:720px){
+    .risk-item{grid-template-columns:1fr;gap:4px;}
+  }
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:16px;
+    box-shadow:var(--shadow);
+  }
+  .btn-export{
+    border:1px solid var(--brown-800);
+    background:var(--brown-900);
+    color:#fff;
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    white-space:nowrap;
+  }
+  .btn-export:hover{background:var(--brown-800);}
+  .filter-group{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .filter-group .fg-label{font-size:11.5px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-right:2px;}
+  .chip{
+    border:1px solid var(--line);
+    background:var(--cream-50);
+    color:var(--ink-600);
+    font-size:12.5px;font-weight:600;
+    padding:6px 12px;border-radius:16px;cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .chip.active{
+    background:var(--brown-900);color:#fff;border-color:var(--brown-900);
+  }
+  .search-input{
+    margin-left:auto;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 12px;
+    font-size:13px;
+    min-width:220px;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ===== TABLE ===== */
+  .section-heading{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    margin:6px 0 12px;
+  }
+  .section-heading h2{
+    margin:0;
+    font-size:19px;
+    font-weight:700;
+    color:var(--brown-950);
+  }
+  .section-heading .section-sub{
+    font-size:12.5px;
+    color:var(--gray-500);
+  }
+  .defect-key{font-family:'IBM Plex Mono',monospace;color:var(--brown-700);font-weight:600;font-size:12.5px;}
+
+  .table-wrap{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    margin-bottom:28px;
+  }
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:left;
+    background:var(--cream-100);
+    color:var(--ink-600);
+    font-size:11px;text-transform:uppercase;letter-spacing:0.06em;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:11px 14px;
+    border-bottom:1px solid var(--cream-200);
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:var(--cream-50);}
+  tbody tr:last-child td{border-bottom:none;}
+  .key-cell{font-family:'IBM Plex Mono',monospace;color:var(--brown-700);font-weight:600;font-size:12.5px;}
+
+  /* ===== CONVERSION OBJECT LIST (workstream-grouped, stage pills) ===== */
+  .workstream-block{margin-bottom:22px;}
+  .workstream-head{
+    font-size:12.5px;
+    color:var(--gray-500);
+    padding:2px 4px 10px;
+  }
+  .workstream-head strong{color:var(--brown-900);font-weight:700;}
+  .obj-list{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .obj-row2{
+    display:grid;
+    grid-template-columns:minmax(200px,2.1fr) 150px 58px auto 52px 140px 88px;
+    align-items:center;
+    gap:14px;
+    padding:14px 16px;
+    border-bottom:1px solid var(--cream-200);
+  }
+  .obj-row2:last-child{border-bottom:none;}
+  .obj-row2:hover{background:var(--cream-50);}
+  .obj-name-cell .name{font-weight:700;color:var(--brown-950);font-size:14px;}
+  .obj-name-cell .key{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gray-500);margin-top:2px;}
+  .obj-module{font-size:13px;color:var(--ink-600);}
+  .obj-env{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-600);}
+  .stage-row{display:flex;gap:5px;flex-wrap:nowrap;}
+  .stage-pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;font-weight:700;
+    padding:3px 7px;border-radius:5px;
+    letter-spacing:0.02em;
+    text-align:center;
+  }
+  .stage-done{background:var(--stage-done);color:#fff;}
+  .stage-current{background:var(--stage-ontrack);color:#fff;}
+  .stage-atrisk{background:var(--stage-atrisk);color:var(--stage-atrisk-ink);}
+  .stage-overdue{background:var(--c-blocked);color:#fff;}
+  .stage-pending{background:var(--cream-200);color:var(--gray-500);}
+  .obj-count{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-600);text-align:right;white-space:nowrap;}
+  .obj-daterange{font-size:12px;color:var(--ink-600);white-space:nowrap;}
+  .obj-next{font-size:12px;font-weight:600;text-align:right;white-space:nowrap;}
+  .obj-next.next-done{color:var(--stage-done);}
+  .obj-next.next-current{color:var(--stage-ontrack);}
+  .obj-next.next-atrisk{color:var(--stage-atrisk-ink);}
+  .obj-next.next-overdue{color:var(--c-blocked);}
+  .obj-next.next-pending{color:var(--gray-500);}
+  @media (max-width:1000px){
+    .obj-row2{grid-template-columns:1fr;gap:6px;}
+    .obj-count,.obj-daterange,.obj-next{text-align:left;}
+  }
+
+  /* ===== LEGEND ===== */
+  .legend-strip{
+    display:flex;flex-wrap:wrap;align-items:center;gap:16px;
+    padding:11px 16px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    font-size:12px;color:var(--ink-600);
+    margin-bottom:26px;
+  }
+  .legend-dot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle;}
+  .legend-sep{color:var(--line);}
+  .legend-stages{color:var(--gray-500);font-size:11.5px;}
+  .sl-pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;font-weight:700;
+    padding:2px 7px;border-radius:5px;
+    background:var(--brown-900);color:var(--gold-100);
+    letter-spacing:0.03em;
+  }
+  .status-pill{
+    font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:14px;display:inline-block;white-space:nowrap;
+  }
+  .mini-progress{
+    width:70px;height:6px;background:var(--cream-200);border-radius:4px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px;
+  }
+  .mini-progress i{display:block;height:100%;background:var(--gold-600);}
+  .pct-text{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-600);}
+  .blocker-note{color:var(--c-blocked);font-size:12px;}
+  .no-rows{padding:36px;text-align:center;color:var(--gray-500);font-size:13.5px;}
+
+  /* ===== INFO / DATA-SOURCE PANEL ===== */
+  .info-panel{
+    background:var(--gold-100);
+    border:1px solid var(--gold-600);
+    border-radius:var(--radius);
+    padding:16px 18px;
+  }
+  .info-panel summary{
+    cursor:pointer;
+    font-weight:700;
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-size:15.5px;
+    color:var(--brown-900);
+    list-style:none;
+  }
+  .info-panel summary::-webkit-details-marker{display:none;}
+  .info-panel summary::before{content:"▸ ";}
+  .info-panel[open] summary::before{content:"▾ ";}
+  .info-panel p, .info-panel li{font-size:13px;color:var(--ink-600);line-height:1.55;}
+  .info-panel ul{margin:8px 0 0;padding-left:20px;}
+  .info-panel code{background:#fff;padding:1px 5px;border-radius:4px;border:1px solid var(--gold-600);}
+
+  footer{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--gray-500);
+    padding:20px 0 6px;
+  }
+
+  @media (max-width:1000px){
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:640px){
+    .kpi-row{grid-template-columns:1fr;}
+    .search-input{margin-left:0;width:100%;}
+    table{font-size:12px;}
+  }
+
+  @media (prefers-reduced-motion:no-preference){
+    .kpi-card, .manifest, tbody tr{transition:transform .15s ease, box-shadow .15s ease;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="badge-shield" aria-hidden="true"><span>UPS</span></div>
+    <div class="brandblock">
+      <div class="co">United Parcel Service &nbsp;•&nbsp; Financial Cloud Ecosystem</div>
+      <h1>Oracle Cloud Conversion Tracker</h1>
+      <div class="sub">Source to Pay · Acquire to Retire · Plan to Report</div>
+    </div>
+    <div class="cycle-pill"><span class="dot"></span>P2 Conversion Cycle</div>
+    <div class="placeholder-note">Logo is a placeholder badge — swap in official UPS artwork before external distribution.</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="exec-summary">
+    <div class="exec-summary-head">
+      <h2>Executive Summary</h2>
+      <span class="exec-summary-sub">Auto-generated from the data below — updates whenever the underlying data does</span>
+    </div>
+    <div class="exec-summary-grid">
+      <div class="exec-col">
+        <div class="exec-col-title">Overall Status</div>
+        <p id="execStatusText"></p>
+      </div>
+      <div class="exec-col">
+        <div class="exec-col-title">Upcoming Subtasks</div>
+        <ul id="execUpcomingList"></ul>
+      </div>
+      <div class="exec-col">
+        <div class="exec-col-title">At Risk</div>
+        <ul id="execAtRiskList"></ul>
+      </div>
+      <div class="exec-col">
+        <div class="exec-col-title">Key Blockers &amp; Issues</div>
+        <ul id="execBlockersList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-tabs" role="tablist" aria-label="P2 program area">
+    <button class="phase-tab" data-toplevel="prep" role="tab" aria-selected="false">P2 Prep</button>
+    <button class="phase-tab active" data-toplevel="conversion" role="tab" aria-selected="true">Data Conversion</button>
+  </div>
+
+  <!-- P2 PREP — placeholder until Matias's prep item list & dates are finalized -->
+  <div id="prepPlaceholder" class="prep-placeholder" style="display:none;">
+    <div class="prep-placeholder-icon">🗓️</div>
+    <h3>P2 Prep tracking coming soon</h3>
+    <p>Data conversion is one workstream inside broader P2 prep. Once Matias finalizes the P2 prep item list and target dates, this tab will get the same structure as Data Conversion — status, upcoming items, and risks &amp; blockers.</p>
+  </div>
+
+  <div id="dataConversionView">
+
+  <!-- KPI SUMMARY -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- RISKS & BLOCKERS ROLLUP -->
+  <div class="risk-panel">
+    <div class="risk-panel-head">⚠ Risks &amp; Blockers <span class="n" id="riskCount">0</span></div>
+    <div class="risk-list" id="riskList"></div>
+  </div>
+
+  <!-- SUBLEDGER MANIFEST OVERVIEW -->
+  <div class="manifests" id="manifestRow"></div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="fg-label">Subledger</span>
+      <button class="chip active" data-filter-type="subledger" data-value="all">All</button>
+      <button class="chip" data-filter-type="subledger" data-value="AP">AP</button>
+      <button class="chip" data-filter-type="subledger" data-value="FA">Fixed Assets</button>
+      <button class="chip" data-filter-type="subledger" data-value="PA">Project Acct.</button>
+      <button class="chip" data-filter-type="subledger" data-value="PO">Purchasing</button>
+      <button class="chip" data-filter-type="subledger" data-value="CM">Cash Mgmt.</button>
+    </div>
+    <div class="filter-group">
+      <span class="fg-label">Status</span>
+      <button class="chip active" data-filter-type="status" data-value="all">All</button>
+      <button class="chip" data-filter-type="status" data-value="Not Started">Not Started</button>
+      <button class="chip" data-filter-type="status" data-value="In Progress">In Progress</button>
+      <button class="chip" data-filter-type="status" data-value="Blocked">Blocked</button>
+      <button class="chip" data-filter-type="status" data-value="Complete">Complete</button>
+    </div>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search object, owner, or Jira key…">
+    <button class="btn-export" id="exportCsvBtn">⭳ Download CSV</button>
+  </div>
+
+  <!-- CONVERSION OBJECTS — grouped by workstream, stage pills per object -->
+  <div id="objectGroups"></div>
+  <div class="no-rows" id="noRows" style="display:none;">No conversion objects match the current filters.</div>
+
+  <!-- LEGEND -->
+  <div class="legend-strip">
+    <span><span class="legend-dot" style="background:var(--stage-done);"></span>Completed</span>
+    <span><span class="legend-dot" style="background:var(--stage-ontrack);"></span>On track</span>
+    <span><span class="legend-dot" style="background:var(--stage-atrisk);"></span>At risk</span>
+    <span><span class="legend-dot" style="background:var(--c-blocked);"></span>Past planned date</span>
+    <span><span class="legend-dot" style="background:var(--cream-200);border:1px solid var(--line);"></span>Not started</span>
+    <span class="legend-sep">|</span>
+    <span class="legend-stages">Stages: EXT Extract · PRF Profile · VAL Validate prof · FBD FBDI files · APR Approve · LOD Load · RCN Recon report · SGN Sign-off</span>
+  </div>
+
+  <!-- DEFECTS REQUIRING RETEST -->
+  <div class="section-heading">
+    <h2>Defects Requiring Retest — P2</h2>
+    <span class="section-sub">Overdue only — past their target retest date and still open</span>
+  </div>
+  <div class="table-wrap defects-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Defect Key</th>
+          <th>Summary</th>
+          <th>Subledger</th>
+          <th>Related Object</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Owner</th>
+          <th>Target Retest</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="defectTableBody"></tbody>
+    </table>
+  </div>
+
+  </div> <!-- /#dataConversionView -->
+
+  <!-- INFO / HOW TO UPDATE -->
+  <details class="info-panel">
+    <summary>How this dashboard gets updated (read before showing to leadership)</summary>
+    <p><strong>Data Conversion</strong> reflects the latest Jira export ("Concourse_-_Jira_2026-08-25T21_35_26_0000.csv", UPS FCE Wave 3 / Release 1 / Test Cycle P2). The <strong>P2 Prep</strong> tab is a placeholder — Matias is still finalizing the P2 prep item list and dates; once that's ready it'll get built out with the same structure.</p>
+    <p>Until Jira is reachable from outside the network, this dashboard is intended to run on <strong>manually refreshed data</strong>:</p>
+    <ul>
+      <li>Every record lives in one JavaScript array (<code>CONVERSION_DATA</code>) near the top of this file's <code>&lt;script&gt;</code> block.</li>
+      <li>Each record's fields (<code>key, subledger, object, phase, status, owner, environment, dueDate, priority, blocker, checklist</code>) are named to match likely Jira export fields, so a CSV pulled from Jira on-prem can be re-mapped into this array with minimal rework.</li>
+      <li><strong>% Complete is never typed in by hand.</strong> Each record has a <code>checklist</code> array (the 8 real Jira sub-task steps: Extract Data, Profile Data, etc.), each carrying its own <code>dueDate</code> pulled from Jira. Checking items off (<code>done: true</code>) automatically recalculates the % everywhere on the page. The Executive Summary's "Upcoming" list surfaces the next incomplete sub-task per object (not the object's overall end date), since the team tracks progress by sub-task.</li>
+      <li>The <strong>Risks &amp; Blockers</strong> panel lists any "Blocked" object, any object whose <strong>current sub-task</strong> is past its planned date, and every open <strong>Critical or High</strong>-severity defect. It no longer flags objects just because their overall end date is approaching — only an actually-overdue current sub-task counts. The Executive Summary's "Key Blockers" box mirrors the object/Critical-defect half of that list.</li>
+      <li>The Executive Summary's <strong>At Risk</strong> column is a separate, softer signal: objects whose current sub-task isn't overdue yet but is due within <code>AT_RISK_SOON_DAYS</code> (currently 3) days — a heads-up before something slips, not yet a blocker.</li>
+      <li>The <strong>Download CSV</strong> button exports whatever is currently visible in the table (respecting active filters/search) — useful for pasting into a leadership deck or status email.</li>
+      <li>Recommended cadence: export from Jira → team lead updates the array (or a linked CSV) → refresh the page before each status meeting.</li>
+      <li>If/when Jira moves to Atlassian Cloud, this same array can be populated by a scheduled sync script instead of by hand — the dashboard itself doesn't need to change.</li>
+      <li>A <strong>Purchasing</strong> module (Purchase Orders, PO Receipts, Item Master) and a <strong>Cash Management</strong> module (Internal Banks, Branches and Accounts) were both added on request — neither is part of UPS's core AP/FA/PA subledger scope, but both were present in the same Jira export. The subledger cards are ordered Cash Management → Purchasing → Project Accounting → AP/FA, matching the team's real conversion sequence.</li>
+      <li>The <strong>Defects Requiring Retest</strong> table shows only <strong>overdue</strong> defects — open (not Withdrawn/Resolved) and past their target retest date. Open defects with no due date, or a due date still in the future, won't appear here even though they still count toward the Executive Summary and Risks &amp; Blockers where applicable. Sourced from the real Jira defect export ("Concourse_-_Jira_2026-08-25T22_02_00_0000.csv"). "Related Object" is parsed from each defect's summary text rather than a clean Jira field, so double-check it before quoting it to leadership.</li>
+      <li>The <strong>Conversion Objects</strong> list is grouped by workstream (Source to Pay, Acquire to Retire, Plan to Report — mapped from each object's subledger) with the 8 Jira sub-task stages shown inline as pills (green = done, gold = in progress and on track, red = past its planned date, gray = not reached yet). Hover a pill for its full stage name. This replaced an earlier click-to-expand version — if this new layout doesn't land well, say so and it's a quick revert.</li>
+    </ul>
+  </details>
+
+  <footer>Draft for internal review · Not connected to live Jira data · Oracle Cloud ERP Conversion Program</footer>
+</div>
+
+<script>
+/* =========================================================================
+   CONVERSION_DATA
+   -------------------------------------------------------------------------
+   This is the single source of truth for the dashboard. Replace/extend this
+   array (or wire it up to a CSV/JSON export) to update the page — nothing
+   else needs to change. Field names are chosen to line up with common Jira
+   fields for an easier future mapping:
+
+     key            -> Jira issue key
+     object         -> conversion object / summary
+     subledger      -> "AP" | "FA" | "PA"
+     phase          -> "Preparation" | "Execution"
+     status         -> "Not Started" | "In Progress" | "Blocked" | "Complete"
+     owner          -> assignee
+     environment    -> target env / mock cycle (e.g. CRP2, SIT2, UAT1)
+     dueDate        -> YYYY-MM-DD
+     priority       -> "High" | "Medium" | "Low"
+     blocker        -> free text note, empty string if none
+     checklist      -> array of { label, done }. % complete is DERIVED from
+                       this (done / total) — do not set a % by hand. Add,
+                       remove, or check off items here; e.g. these could map
+                       to Jira sub-tasks or a checklist custom field.
+   ========================================================================= */
+const CONVERSION_DATA = [
+  // ---- AP: Accounts Payable ----
+  { key:"OCA-103", object:"Open Payables Invoices (Balances)", subledger:"AP", phase:"Preparation", status:"In Progress", owner:"M. Cho", environment:"SIT2", dueDate:"2026-09-05", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-104", object:"Prepayments & Advances", subledger:"AP", phase:"Preparation", status:"Not Started", owner:"M. Cho", environment:"SIT2", dueDate:"2026-09-12", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:false},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-105", object:"1099 / Withholding Tax Setup", subledger:"AP", phase:"Preparation", status:"Blocked", owner:"T. Weller", environment:"SIT2", dueDate:"2026-09-02", priority:"High", blocker:"Awaiting finalized tax mapping from Tax COE",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+
+  // ---- FA: Fixed Assets ----
+  { key:"OCA-201", object:"Asset Master — Corporate Book", subledger:"FA", phase:"Preparation", status:"Complete", owner:"J. Palacios", environment:"CRP2", dueDate:"2026-08-01", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:true},{label:"Conversion program/script built",done:true},{label:"Peer / SME review complete",done:true}] },
+  { key:"OCA-202", object:"Asset Categories & Book Mapping", subledger:"FA", phase:"Preparation", status:"Complete", owner:"J. Palacios", environment:"CRP2", dueDate:"2026-08-08", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:true},{label:"Conversion program/script built",done:true},{label:"Peer / SME review complete",done:true}] },
+  { key:"OCA-203", object:"Accumulated Depreciation Balances", subledger:"FA", phase:"Preparation", status:"In Progress", owner:"S. Novak", environment:"SIT2", dueDate:"2026-09-08", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-204", object:"CIP (Construction in Progress) Assets", subledger:"FA", phase:"Preparation", status:"Blocked", owner:"S. Novak", environment:"SIT2", dueDate:"2026-09-05", priority:"High", blocker:"CIP project cost detail pending from PA team hand-off",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-205", object:"Tax Book Assets & Depreciation Rules", subledger:"FA", phase:"Preparation", status:"Not Started", owner:"J. Palacios", environment:"SIT2", dueDate:"2026-09-15", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:false},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+
+  // ---- PA: Project Accounting ----
+  { key:"OCA-301", object:"Active Projects & WBS Structures", subledger:"PA", phase:"Preparation", status:"In Progress", owner:"D. Okafor", environment:"CRP2", dueDate:"2026-08-28", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:true},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-302", object:"Project Budgets", subledger:"PA", phase:"Preparation", status:"In Progress", owner:"D. Okafor", environment:"SIT2", dueDate:"2026-09-10", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-303", object:"Project Contracts & Billing Events", subledger:"PA", phase:"Preparation", status:"Not Started", owner:"L. Marsh", environment:"SIT2", dueDate:"2026-09-19", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:false},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-304", object:"Capital Projects (CIP Interface to FA)", subledger:"PA", phase:"Preparation", status:"Blocked", owner:"L. Marsh", environment:"SIT2", dueDate:"2026-09-05", priority:"High", blocker:"Interface spec to FA CIP conversion under review",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+  { key:"OCA-305", object:"Unbilled Receivables Balances", subledger:"PA", phase:"Preparation", status:"Not Started", owner:"D. Okafor", environment:"SIT2", dueDate:"2026-09-22", priority:"Medium", blocker:"",
+    checklist:[{label:"Source data extracted",done:false},{label:"Data cleansed & validated",done:false},{label:"Mapping/business rules confirmed",done:false},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+
+  // ---- PO: Purchasing ----
+  { key:"OCA-401", object:"Supplier Master Conversion", subledger:"PO", phase:"Preparation", status:"Complete", owner:"R. Adeyemi", environment:"CRP2", dueDate:"2026-08-01", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:true},{label:"Conversion program/script built",done:true},{label:"Peer / SME review complete",done:true}] },
+  { key:"OCA-402", object:"Supplier Sites & Bank Accounts", subledger:"PO", phase:"Preparation", status:"In Progress", owner:"R. Adeyemi", environment:"CRP2", dueDate:"2026-08-25", priority:"High", blocker:"",
+    checklist:[{label:"Source data extracted",done:true},{label:"Data cleansed & validated",done:true},{label:"Mapping/business rules confirmed",done:true},{label:"Conversion program/script built",done:false},{label:"Peer / SME review complete",done:false}] },
+
+  // =========================================================================
+  // EXECUTION PHASE — sourced from Jira export
+  // "Concourse_-_Jira_2026-08-18T15_58_10-0400.csv" (UPS FCE Wave 3, Release 1,
+  // Test Cycle P2). Jira sub-tasks rolled up into conversion objects (8
+  // sub-tasks each: Extract Data -> Profile Data -> Validate Profiling
+  // Report -> Generate Load Files (FBDI) -> Approve to Load -> Load Data ->
+  // Generate Recon Report -> Perform Post Load Validation & Sign-Off). That
+  // 8-step sequence is now the Execution checklist below, replacing the
+  // earlier placeholder checklist. "key" is Jira's Custom field (ID#), the
+  // RICEFW/object code, since it identifies the object better than a single
+  // sub-task's issue key. The "environment" field (shown in the table as
+  // "Source") reflects the actual Jira mock/round codes (P590, ACC, BLK)
+  // rather than the earlier placeholder CRP2/SIT2/UAT1 labels — ask the team
+  // what these map to if that matters for the deck.
+  // =========================================================================
+  { key:"FCE-CNV-P590-AP-INV-0358", object:"Open AP Invoices", subledger:"AP", phase:"Execution", status:"Not Started", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-10-28", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-06"},{label:"Profile Data",done:false,dueDate:"2026-10-06"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-09"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-12"},{label:"Approve to Load",done:false,dueDate:"2026-10-13"},{label:"Load Data",done:false,dueDate:"2026-10-20"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-21"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-28"}] },
+  { key:"FCE-CNV-P590-AP-SUP-0352", object:"Supplier", subledger:"PO", phase:"Execution", status:"In Progress", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-09-15", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-26"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-08-27"},{label:"Approve to Load",done:false,dueDate:"2026-08-28"},{label:"Load Data",done:false,dueDate:"2026-09-04"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-08"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-15"}] },
+
+  { key:"FCE-CNV-P590-FA-ASSET-0355", object:"Fixed Assets", subledger:"FA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-16", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-08-26"},{label:"Profile Data",done:false,dueDate:"2026-08-26"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-31"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-01"},{label:"Approve to Load",done:false,dueDate:"2026-09-02"},{label:"Load Data",done:false,dueDate:"2026-09-08"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-09"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-16"}] },
+
+  { key:"FCE-CNV-ACC-PRJ-TASK-0347", object:"Project and Project Task", subledger:"PA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"ACC", dueDate:"2026-09-08", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:false,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+  { key:"FCE-CNV-P590-PRJ-TASK-0465", object:"Project and Project Task", subledger:"PA", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-08", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-20"},{label:"Profile Data",done:true,dueDate:"2026-08-20"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-24"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-25"},{label:"Approve to Load",done:false,dueDate:"2026-08-26"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+
+  { key:"FCE-CNV-ACC-PRJ-BDGT-0348", object:"Project Budget", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"ACC", dueDate:"2026-09-21", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-01"},{label:"Profile Data",done:false,dueDate:"2026-09-01"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-03"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-04"},{label:"Approve to Load",done:false,dueDate:"2026-09-08"},{label:"Load Data",done:false,dueDate:"2026-09-11"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-14"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-21"}] },
+  { key:"FCE-CNV-P590-PRJ-BDGT-0467", object:"Project Budget", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-21", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-01"},{label:"Profile Data",done:false,dueDate:"2026-09-01"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-03"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-04"},{label:"Approve to Load",done:false,dueDate:"2026-09-08"},{label:"Load Data",done:false,dueDate:"2026-09-11"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-14"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-21"}] },
+
+  { key:"FCE-CNV-P590-PRJ-ASSET-0362", object:"Project Assets", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-25", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-09"},{label:"Profile Data",done:false,dueDate:"2026-09-09"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-11"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-14"},{label:"Approve to Load",done:false,dueDate:"2026-09-15"},{label:"Load Data",done:false,dueDate:"2026-09-17"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-18"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-25"}] },
+
+  { key:"FCE-CNV-BLK-PRJ-EXP-0502", object:"Project Expenditures", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"BLK", dueDate:"2026-11-04", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-14"},{label:"Profile Data",done:false,dueDate:"2026-10-14"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-19"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-20"},{label:"Approve to Load",done:false,dueDate:"2026-10-21"},{label:"Load Data",done:false,dueDate:"2026-10-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-11-04"}] },
+  { key:"FCE-CNV-P590-PRJ-EXP-0363", object:"Project Expenditures", subledger:"PA", phase:"Execution", status:"Not Started", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-11-04", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-14"},{label:"Profile Data",done:false,dueDate:"2026-10-14"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-19"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-20"},{label:"Approve to Load",done:false,dueDate:"2026-10-21"},{label:"Load Data",done:false,dueDate:"2026-10-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-11-04"}] },
+
+  // ---- PO: Purchasing (added on request — Purchase Orders, PO Receipts, Item
+  // Master. Not one of the three subledgers UPS is implementing (AP/FA/PA),
+  // but included since these conversion objects were in the same Jira export.
+  // Cash Management (bank accounts) was also in the export and is still
+  // excluded — say the word if you want that added as its own module too. ----
+  { key:"FCE-CNV-P590-PO-PUR-0356", object:"Open Purchase Orders", subledger:"PO", phase:"Execution", status:"Not Started", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-09-28", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-08"},{label:"Profile Data",done:false,dueDate:"2026-09-08"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-11"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-14"},{label:"Approve to Load",done:false,dueDate:"2026-09-15"},{label:"Load Data",done:false,dueDate:"2026-09-18"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-21"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-28"}] },
+
+  { key:"FCE-CNV-P590-PO-RECP--0357", object:"Open PO Receipts", subledger:"PO", phase:"Execution", status:"Not Started", owner:"cmyintthu@ups.com", environment:"P590", dueDate:"2026-10-12", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-22"},{label:"Profile Data",done:false,dueDate:"2026-09-22"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-25"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-28"},{label:"Approve to Load",done:false,dueDate:"2026-09-29"},{label:"Load Data",done:false,dueDate:"2026-10-02"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-05"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-12"}] },
+
+  { key:"FCE-CNV-P590-INV-ITEM-0354", object:"Item Master", subledger:"PO", phase:"Execution", status:"In Progress", owner:"alinesch@ups.com", environment:"P590", dueDate:"2026-09-04", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-24"},{label:"Approve to Load",done:false,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-27"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-04"}] },
+
+  // ---- CM: Cash Management (added on request — Internal Banks, Branches
+  // and Accounts. Also not one of the core AP/FA/PA subledgers, but present
+  // in the same Jira export. ----
+  { key:"FCE-CNV-P590-CM-BANK-0353", object:"Internal Banks, Branches and Accounts", subledger:"CM", phase:"Execution", status:"In Progress", owner:"bleslie@ups.com", environment:"P590", dueDate:"2026-09-08", priority:"Medium", blocker:"",
+    checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-08-24"},{label:"Approve to Load",done:false,dueDate:"2026-08-25"},{label:"Load Data",done:false,dueDate:"2026-08-28"},{label:"Generate Recon Report",done:false,dueDate:"2026-08-31"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-08"}] },
+];
+
+/* =========================================================================
+   DEFECT_DATA
+   -------------------------------------------------------------------------
+   Sourced from Jira export "Concourse_-_Jira_2026-08-18T23_28_17_0000.csv"
+   (UPS FCE Wave 3, defects labeled "Conversion"). 55 of 57 exported defects
+   are included — 2 "Withdrawn" defects were dropped, same treatment as
+   withdrawn conversion objects. Field names:
+
+     key              -> Jira issue key
+     summary          -> defect title (verbatim from Jira)
+     subledger        -> "AP" | "FA" | "PA" | "PO" | "CM" (mapped from Jira's
+                          Module field; "Inventory" is folded into PO)
+     relatedObject    -> best-guess object name parsed from the summary's
+                          leading phrase — not a clean Jira field, so double-
+                          check before quoting it verbatim to leadership
+     severity         -> "Critical" | "High" | "Medium" | "Low" | "Not Set"
+                          (from Jira Priority; "No priority" -> "Not Set")
+     status           -> Jira's actual status: "Not Started" | "In Progress" |
+                          "Ready for Retest" | "On Hold" | "Resolved"
+     owner            -> assignee
+     dateIdentified    -> YYYY-MM-DD (from Created)
+     targetRetestDate  -> YYYY-MM-DD (from Due Date); blank if Jira had none
+     notes            -> from Jira's Workaround field, if populated
+   ========================================================================= */
+const DEFECT_DATA = [
+  { key:"CONAMER1001932-18578", summary:"Reconciliation report is not present", subledger:"PO", relatedObject:"Reconciliation report is not present", severity:"Medium", status:"In Progress", owner:"alinesch@ups.com", dateIdentified:"2026-03-18", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-19291", summary:"Suppliers Conversion (Suppliers, Addresses, Sites, Contacts, Attachments, Supplier Bank Accounts) - Functional Testing Defect Summary", subledger:"AP", relatedObject:"Suppliers Conversion (Suppliers, Addresses, Sites, Contacts, Attachmen", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-12", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-19279", summary:"Unable to create receipt for Service based POs", subledger:"PO", relatedObject:"Unable to create receipt for Service based POs", severity:"Medium", status:"Ready for Retest", owner:"anuradhakumar@ups.com", dateIdentified:"2026-05-08", targetRetestDate:"", notes:"Not present as of now" },
+  { key:"CONAMER1001932-19293", summary:"Open PO Receipts - Functional Testing Defect Summary", subledger:"PO", relatedObject:"Open PO Receipts", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-12", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-19292", summary:"Open Purchase Orders - Functional Testing Defect Summary", subledger:"PO", relatedObject:"Open Purchase Orders", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-12", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20134", summary:"PO-Matched AP Invoices Load Issue - Legal Entity Mismatch", subledger:"AP", relatedObject:"PO-Matched AP Invoices Load Issue", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-18", targetRetestDate:"", notes:"Setting the AP Invoice Legal Entity based on the Distributions Segment1 value manually for loading the record for unit testing." },
+  { key:"CONAMER1001932-20133", summary:"Supplier BU and AP Invoice BU Not Aligning", subledger:"AP", relatedObject:"Supplier BU and AP Invoice BU Not Aligning", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-18", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20172", summary:"Duplicate legal entity names in Oracle Cloud", subledger:"AP", relatedObject:"Duplicate legal entity names in Oracle Cloud", severity:"Critical", status:"In Progress", owner:"agold@ups.com", dateIdentified:"2026-05-19", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20171", summary:"AP Invoices Load Issue for AWT Line Type", subledger:"AP", relatedObject:"AP Invoices Load Issue for AWT Line Type", severity:"Medium", status:"Ready for Retest", owner:"anuradhakumar@ups.com", dateIdentified:"2026-05-19", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20177", summary:"Update Conversion identifier on PO Receipts and AP Invoice Conversions", subledger:"AP", relatedObject:"Update Conversion identifier on PO Receipts and AP Invoice Conversions", severity:"Not Set", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-21", targetRetestDate:"", notes:"PO Receipt - Update identifier from attribute6 at line level to attribute1 at header level AP Invoices - Update attribute3 at hedaer level to use below values: Conversion-InFlight Conversion-Accounted-Open Conversion-Accounted-Closed Conversion-Accounted-Partial" },
+  { key:"CONAMER1001932-20420", summary:"Multiple tax lines are not allowed to be loaded with same tax rate code in one invoice", subledger:"PO", relatedObject:"Multiple tax lines are not allowed to be loaded with same tax rate cod", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-28", targetRetestDate:"", notes:"Create EBS tax rates in Oracle Cloud till the time tax engine design is finalized" },
+  { key:"CONAMER1001932-20419", summary:"Project Cost Unit Testing - Enhancements", subledger:"PA", relatedObject:"Project Cost Unit Testing", severity:"Medium", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-05-28", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20423", summary:"Missing data fields in converted invoices", subledger:"PO", relatedObject:"Missing data fields in converted invoices", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-05-29", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20444", summary:"Update DFF mapping in PO and AP Invoices Conversion FSDs based on DFF restructuring", subledger:"AP", relatedObject:"Update DFF mapping in PO and AP Invoices Conversion FSDs based on DFF ", severity:"High", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-06-04", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20457", summary:"Change logic to use person number from EBS as reference in Cloud to derive the buyer/requester name or email address [S2P]", subledger:"PO", relatedObject:"Change logic to use person number from EBS as reference in Cloud to de", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-06-09", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20456", summary:"Include legacy transaction id DFFs in the POs, receipts and AP Invoice s conversion", subledger:"AP", relatedObject:"Include legacy transaction id DFFs in the POs, receipts and AP Invoice", severity:"Medium", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-06-09", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20455", summary:"New Attributes required for Item Conversion - Coupa Contract Number, Coupa Supplier,", subledger:"PO", relatedObject:"New Attributes required for Item Conversion", severity:"Not Set", status:"On Hold", owner:"prerna.thadani@pwc.com", dateIdentified:"2026-06-09", targetRetestDate:"2026-05-15", notes:"" },
+  { key:"CONAMER1001932-20460", summary:"Change logic to use person number from EBS as reference in Cloud to derive the buyer/requester name or email address [P2R]", subledger:"PA", relatedObject:"Change logic to use person number from EBS as reference in Cloud to de", severity:"Medium", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-06-10", targetRetestDate:"", notes:"N/A - the defect in itself is a workaround" },
+  { key:"CONAMER1001932-20465", summary:"Determine Exchange Rate - Due to Differences Between AP Invoice BU and Project Ledger BU", subledger:"PA", relatedObject:"Determine Exchange Rate", severity:"Medium", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-06-11", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20470", summary:"AP invoices linked to projects could not be validated", subledger:"AP", relatedObject:"AP invoices linked to projects could not be validated", severity:"Not Set", status:"In Progress", owner:"bleslie@ups.com", dateIdentified:"2026-06-12", targetRetestDate:"", notes:"Load invoices with their actual accounting date" },
+  { key:"CONAMER1001932-20523", summary:"Legacy Supplier Number to be captured in Cloud Supplier records during Conversion", subledger:"PO", relatedObject:"Legacy Supplier Number to be captured in Cloud Supplier records during", severity:"High", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-06-18", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-20474", summary:"Separate Liability Account (Natural Account) for converted closed (paid) invoices", subledger:"AP", relatedObject:"Separate Liability Account (Natural Account) for converted closed (pai", severity:"Not Set", status:"Ready for Retest", owner:"cmyintthu@ups.com", dateIdentified:"2026-06-15", targetRetestDate:"", notes:"N/A - new requirement" },
+  { key:"CONAMER1001932-21876", summary:"P590 & P035 Banks, Branches, InternalBankAccounts Conversion - AccountNumber not found in BANK_ATTR2_3 cross reference", subledger:"CM", relatedObject:"P590 & P035 Banks, Branches, InternalBankAccounts Conversion", severity:"Medium", status:"In Progress", owner:"subhayudas@ups.com", dateIdentified:"2026-07-17", targetRetestDate:"2026-08-14", notes:"" },
+  { key:"CONAMER1001932-21875", summary:"P035 & P590 Banks, Branches, InternalBankAccounts - Legal Entity not found in BANK_ATTR1 cross reference", subledger:"CM", relatedObject:"P035 & P590 Banks, Branches, InternalBankAccounts", severity:"Medium", status:"In Progress", owner:"subhayudas@ups.com", dateIdentified:"2026-07-17", targetRetestDate:"", notes:"" },
+  { key:"CONAMER1001932-21821", summary:"Supplier Conversion De-duplication Report - Add new fields to the Report", subledger:"PO", relatedObject:"Supplier Conversion De-duplication Report", severity:"Medium", status:"In Progress", owner:"cmyintthu@ups.com", dateIdentified:"2026-07-13", targetRetestDate:"2026-08-31", notes:"Additional fields required to determine action for potential duplicate suppliers" },
+  { key:"CONAMER1001932-21828", summary:"Fixed Assets Profile Report - Record Counts", subledger:"FA", relatedObject:"Fixed Assets Profile Report", severity:"Not Set", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-07-14", targetRetestDate:"", notes:"Profile report program to be updated" },
+  { key:"CONAMER1001932-21827", summary:"FA Conversion Profile Report - Retired assets", subledger:"FA", relatedObject:"FA Conversion Profile Report", severity:"Not Set", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-07-14", targetRetestDate:"", notes:"Update profile report program" },
+  { key:"CONAMER1001932-21826", summary:"Project Conversion - Profile Report - Mapping for Project Class Code Incorrect", subledger:"PA", relatedObject:"Project Conversion", severity:"Medium", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-07-14", targetRetestDate:"", notes:"Update the mapping in conversion program" },
+  { key:"CONAMER1001932-22752", summary:"Projects Conversion - RRDD Missing from Crosswalk", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"Fail", owner:"gsiedlarczyk@ups.com", dateIdentified:"2026-07-23", targetRetestDate:"2026-08-17", notes:"" },
+  { key:"CONAMER1001932-22751", summary:"Projects Conversion - ProjectClassification ClassCode Missing from Config and Crosswalk", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"In Progress", owner:"asaloni@ups.com", dateIdentified:"2026-07-23", targetRetestDate:"2026-11-02", notes:"" },
+  { key:"CONAMER1001932-22825", summary:"Supplier Conversion - Profile Report - Geography Validation - Geo Combinations only validated in Profiling report for US based vendors.", subledger:"PO", relatedObject:"Supplier Conversion", severity:"Critical", status:"On Hold", owner:"cmyintthu@ups.com", dateIdentified:"2026-07-31", targetRetestDate:"", notes:"N/A" },
+  { key:"CONAMER1001932-23119", summary:"Projects Conversion - No Employees Found in EBS", subledger:"PA", relatedObject:"Projects Conversion", severity:"High", status:"In Progress", owner:"gsiedlarczyk@ups.com", dateIdentified:"2026-08-07", targetRetestDate:"2026-08-17", notes:"Workaround is going to be discussed in a call on 8/10/26." },
+  { key:"CONAMER1001932-23120", summary:"Projects Conversion - Employee not found in Cloud", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"In Progress", owner:"gsiedlarczyk@ups.com", dateIdentified:"2026-08-07", targetRetestDate:"2026-08-18", notes:"" },
+  { key:"CONAMER1001932-23131", summary:"ProjectCosts Conversion - Need Unique Join from Blackline to AP Invoice", subledger:"PA", relatedObject:"ProjectCosts Conversion", severity:"Medium", status:"Not Started", owner:"bleslie@ups.com", dateIdentified:"2026-08-10", targetRetestDate:"2026-08-18", notes:"Potential workarounds to be discussed." },
+  { key:"CONAMER1001932-23155", summary:"Projects Conversion - Closed Projects not being Converted as Expected", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"Ready for Retest", owner:"bleslie@ups.com", dateIdentified:"2026-08-18", targetRetestDate:"2026-08-20", notes:"" },
+  { key:"CONAMER1001932-23199", summary:"Projects Conversion - ProjectCompletionDate is Blank in Legacy Source", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"Not Started", owner:"bleslie@ups.com", dateIdentified:"2026-08-21", targetRetestDate:"2026-11-02", notes:"" },
+  { key:"CONAMER1001932-23196", summary:"Projects Conversion - PMHireDate after ProjectStartDate", subledger:"PA", relatedObject:"Projects Conversion", severity:"Medium", status:"Not Started", owner:"asaloni@ups.com", dateIdentified:"2026-08-21", targetRetestDate:"2026-11-02", notes:"Not yet determined." },
+];
+
+// Derive % complete from checklist so it's never hand-typed.
+function pctComplete(row){
+  if(!row.checklist || row.checklist.length===0) return 0;
+  const done = row.checklist.filter(c=>c.done).length;
+  return Math.round((done/row.checklist.length)*100);
+}
+
+const TODAY = new Date("2026-08-25");
+function daysUntil(dateStr){
+  if(!dateStr) return 9999; // no due date on file — don't treat as urgent/overdue
+  const d = new Date(dateStr);
+  if(isNaN(d)) return 9999;
+  return Math.round((d - TODAY) / (1000*60*60*24));
+}
+
+const SUBLEDGER_LABEL = { AP:"Accounts Payable", FA:"Fixed Assets", PA:"Project Accounting", PO:"Purchasing", CM:"Cash Management" };
+const STATUS_CLASS = {
+  "Complete":"s-complete",
+  "In Progress":"s-progress",
+  "Blocked":"s-blocked",
+  "Not Started":"s-notstarted"
+};
+const SEVERITY_CLASS = {
+  "Critical":"s-blocked",
+  "High":"s-progress",
+  "Medium":"s-notstarted",
+  "Low":"s-notstarted",
+  "Not Set":"s-notstarted"
+};
+const DEFECT_STATUS_CLASS = {
+  "Not Started":"s-notstarted",
+  "In Progress":"s-progress",
+  "Ready for Retest":"s-progress",
+  "On Hold":"s-blocked",
+  "Fail":"s-blocked",
+  "Resolved":"s-complete"
+};
+const DEFECT_CLOSED_STATUSES = ["Resolved"];
+
+// Resolved defects are excluded entirely (not just muted) — if a future
+// export includes Resolved items again, this filter drops them automatically.
+const OPEN_DEFECT_DATA = DEFECT_DATA.filter(d => !DEFECT_CLOSED_STATUSES.includes(d.status));
+
+// Conversion Preparation tab is hidden for now (data stays in CONVERSION_DATA
+// above, untouched, so it's a one-line change to bring it back later — just
+// remove this filter and re-add the Preparation tab button in the HTML).
+const ACTIVE_DATA = CONVERSION_DATA.filter(r => r.phase !== "Preparation");
+
+let state = { phase:"all", subledgers:new Set(), statuses:new Set(), search:"" };
+
+function filteredData(){
+  return ACTIVE_DATA.filter(r=>{
+    if(state.phase!=="all" && r.phase!==state.phase) return false;
+    if(state.subledgers.size>0 && !state.subledgers.has(r.subledger)) return false;
+    if(state.statuses.size>0 && !state.statuses.has(r.status)) return false;
+    if(state.search){
+      const s = state.search.toLowerCase();
+      if(!(r.object.toLowerCase().includes(s) || r.owner.toLowerCase().includes(s) || r.key.toLowerCase().includes(s))) return false;
+    }
+    return true;
+  });
+}
+
+function renderKPIs(){
+  const rows = state.phase==="all" ? ACTIVE_DATA : ACTIVE_DATA.filter(r=>r.phase===state.phase);
+  const total = rows.length;
+  const complete = rows.filter(r=>r.status==="Complete").length;
+  const blocked = rows.filter(r=>r.status==="Blocked").length;
+  const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
+
+  const cards = [
+    { label:"Conversion Objects in Scope", value:total, foot: "Execution", cls:"" },
+    { label:"Average % Complete", value:avgPct+"%", foot:"Across objects in view", cls:"" },
+    { label:"Objects Blocked", value:blocked, foot:"Need escalation", cls: blocked>0 ? "blocked" : "" },
+    { label:"Objects Complete", value:complete+" <small>/ "+total+"</small>", foot:"Fully converted & validated", cls:"" },
+  ];
+
+  document.getElementById("kpiRow").innerHTML = cards.map(c=>`
+    <div class="kpi-card ${c.cls}">
+      <div class="kpi-label">${c.label}</div>
+      <div class="kpi-value">${c.value}</div>
+      <div class="kpi-foot">${c.foot}</div>
+    </div>
+  `).join("");
+}
+
+function renderManifests(){
+  const scope = state.phase==="all" ? ACTIVE_DATA : ACTIVE_DATA.filter(r=>r.phase===state.phase);
+  const subledgers = ["CM","PO","PA","AP","FA"];
+
+  document.getElementById("manifestRow").innerHTML = subledgers.map(sl=>{
+    const rows = scope.filter(r=>r.subledger===sl);
+    const total = rows.length;
+    const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
+    const byStatus = ["Not Started","In Progress","Blocked","Complete"].map(st=>({
+      st, n: rows.filter(r=>r.status===st).length
+    })).filter(x=>x.n>0);
+
+    return `
+      <div class="manifest">
+        <div class="manifest-head">
+          <span class="tag">${sl} — ${SUBLEDGER_LABEL[sl]}</span>
+          <span class="route">P2 · ORACLE CLOUD</span>
+        </div>
+        <div class="manifest-body">
+          <div class="count-line"><span>Objects in scope</span><b>${total}</b></div>
+          <div class="progress-track"><div class="progress-fill" style="width:${avgPct}%"></div></div>
+          <div class="count-line"><span>Average completion</span><b>${avgPct}%</b></div>
+          <div class="status-chip-row">
+            ${byStatus.map(x=>`<span class="status-mini ${STATUS_CLASS[x.st]}"><span class="n">${x.n}</span>${x.st}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+const WORKSTREAM_MAP = { AP:"Source to Pay", PO:"Source to Pay", CM:"Source to Pay", FA:"Acquire to Retire", PA:"Plan to Report" };
+const WORKSTREAM_ORDER = ["Source to Pay","Acquire to Retire","Plan to Report"];
+const STAGE_ABBR = [
+  {code:"EXT", label:"Extract Data"},
+  {code:"PRF", label:"Profile Data"},
+  {code:"VAL", label:"Validate Profiling Report"},
+  {code:"FBD", label:"Generate Load Files (FBDI)"},
+  {code:"APR", label:"Approve to Load"},
+  {code:"LOD", label:"Load Data"},
+  {code:"RCN", label:"Generate Recon Report"},
+  {code:"SGN", label:"Perform Post Load Validation & Provide Sign-Off"},
+];
+const STAGE_ABBR_FULL = { EXT:"Extract", PRF:"Profile", VAL:"Validate", FBD:"FBDI", APR:"Approve", LOD:"Load", RCN:"Recon", SGN:"Sign-off" };
+
+function formatDateShort(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  if(isNaN(d)) return "";
+  return d.toLocaleDateString("en-US", { month:"short", day:"numeric" });
+}
+
+// Per-stage state: done (dark blue), current — "current" (green, on track),
+// "atrisk" (yellow, due within AT_RISK_SOON_DAYS but not overdue yet), or
+// "overdue" (red, past its planned date), or "pending" (gray, not reached
+// yet).
+function stageState(obj, idx, nextIdx){
+  const step = obj.checklist[idx];
+  if(step.done) return "done";
+  if(nextIdx===-1 || idx>nextIdx) return "pending";
+  const days = daysUntil(step.dueDate);
+  if(days<0 || obj.status==="Blocked") return "overdue";
+  if(obj.status==="In Progress"){
+    if(days<=AT_RISK_SOON_DAYS) return "atrisk";
+    return "current";
+  }
+  return "pending";
+}
+
+function renderObjectGroups(){
+  const rows = filteredData();
+  const container = document.getElementById("objectGroups");
+  const noRows = document.getElementById("noRows");
+
+  if(rows.length===0){
+    container.innerHTML = "";
+    noRows.style.display = "block";
+    return;
+  }
+  noRows.style.display = "none";
+
+  container.innerHTML = WORKSTREAM_ORDER.map(ws=>{
+    const wsRows = rows.filter(r => WORKSTREAM_MAP[r.subledger]===ws);
+    if(wsRows.length===0) return "";
+
+    const totalSteps = wsRows.reduce((a,r)=>a+r.checklist.length,0);
+    const doneSteps = wsRows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+    const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
+
+    const objRows = wsRows.map(r=>{
+      const nextIdx = r.checklist.findIndex(c=>!c.done);
+      const done = r.checklist.filter(c=>c.done).length;
+      const dates = r.checklist.map(c=>c.dueDate).filter(Boolean).sort();
+      const dateRange = dates.length ? `${formatDateShort(dates[0])} – ${formatDateShort(dates[dates.length-1])}` : "";
+
+      const stagePills = r.checklist.map((c,idx)=>{
+        const st = stageState(r, idx, nextIdx);
+        const code = STAGE_ABBR[idx] ? STAGE_ABBR[idx].code : "";
+        return `<span class="stage-pill stage-${st}" title="${c.label}">${code}</span>`;
+      }).join("");
+
+      let nextLabel = "Complete", nextClass = "next-done";
+      if(nextIdx !== -1){
+        const st = stageState(r, nextIdx, nextIdx);
+        nextClass = `next-${st}`;
+        nextLabel = STAGE_ABBR_FULL[STAGE_ABBR[nextIdx].code] || STAGE_ABBR[nextIdx].code;
+      }
+
+      return `
+        <div class="obj-row2">
+          <div class="obj-name-cell">
+            <span class="name">${r.object}</span>
+            <span class="key">${r.key}</span>
+          </div>
+          <div class="obj-module">${SUBLEDGER_LABEL[r.subledger]}</div>
+          <div class="obj-env">${r.environment}</div>
+          <div class="stage-row">${stagePills}</div>
+          <div class="obj-count">${done} / ${r.checklist.length}</div>
+          <div class="obj-daterange">${dateRange}</div>
+          <div class="obj-next ${nextClass}">${nextLabel}</div>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="workstream-block">
+        <div class="workstream-head"><strong>${ws}</strong> · ${wsRows.length} object${wsRows.length===1?"":"s"} · ${pct}% of steps complete</div>
+        <div class="obj-list">${objRows}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+// The "current" sub-task for an object: its first incomplete checklist step.
+// Returns null if every step is done.
+function currentSubtask(obj){
+  const idx = obj.checklist.findIndex(c=>!c.done);
+  if(idx===-1) return null;
+  const step = obj.checklist[idx];
+  return { idx, step, days: daysUntil(step.dueDate) };
+}
+
+// Risks & Blockers: any Blocked conversion object, any object whose CURRENT
+// sub-task is past its planned date, plus any Critical/High-severity defect
+// that isn't yet Resolved.
+function objectRiskRows(){
+  const scope = state.phase==="all" ? ACTIVE_DATA : ACTIVE_DATA.filter(r=>r.phase===state.phase);
+  return scope.filter(r=>{
+    if(r.status==="Blocked") return true;
+    const cur = currentSubtask(r);
+    if(cur && cur.days<0) return true; // current sub-task is overdue
+    return false;
+  });
+}
+
+// "At risk" — current sub-task not yet overdue, but due within this many
+// days, so it's worth calling out before it slips.
+const AT_RISK_SOON_DAYS = 3;
+function atRiskObjectRows(){
+  const scope = ACTIVE_DATA;
+  return scope.filter(r=>{
+    if(r.status==="Blocked" || r.status==="Complete") return false;
+    const cur = currentSubtask(r);
+    if(!cur) return false;
+    return cur.days>=0 && cur.days<=AT_RISK_SOON_DAYS;
+  });
+}
+
+function defectRiskRows(){
+  return OPEN_DEFECT_DATA.filter(d => d.severity==="Critical" || d.severity==="High");
+}
+
+function renderRisks(){
+  // Criticality rank: 0 = Blocked / overdue-current-subtask objects and
+  // Critical defects, 1 = High defects.
+  const objectRisks = objectRiskRows().map(r=>{
+    const cur = currentSubtask(r);
+    const isBlocked = r.status==="Blocked";
+    return {
+      type:"object", tag: isBlocked ? "BLOCKED" : "SUBTASK",
+      key:r.key, subledger:r.subledger,
+      label: cur ? `${r.object} — ${cur.step.label}` : r.object,
+      statusLabel: isBlocked ? "Blocked" : "Past planned date",
+      statusClass: isBlocked ? STATUS_CLASS["Blocked"] : "s-blocked",
+      sortDays: cur ? cur.days : daysUntil(r.dueDate),
+      rank: 0
+    };
+  });
+
+  const defectRisks = defectRiskRows().map(d=>({
+    type:"defect", tag:"DEFECT", key:d.key, subledger:d.subledger, label:d.summary,
+    statusLabel:`${d.severity} · ${d.status}`, statusClass:SEVERITY_CLASS[d.severity],
+    sortDays: daysUntil(d.targetRetestDate),
+    rank: d.severity==="Critical" ? 0 : 1
+  }));
+
+  const rows = [...objectRisks, ...defectRisks].sort((a,b)=> a.rank-b.rank || a.sortDays-b.sortDays);
+
+  document.getElementById("riskCount").textContent = rows.length;
+  const list = document.getElementById("riskList");
+
+  if(rows.length===0){
+    list.innerHTML = `<div class="risk-empty">No blocked objects, overdue sub-tasks, or critical/high defects in the current view.</div>`;
+    return;
+  }
+
+  list.innerHTML = rows.map(r=>`
+    <div class="risk-item">
+      <span class="key-cell">${r.key}</span>
+      <span class="sl-pill">${r.subledger}</span>
+      <span class="defect-tag"><span class="status-pill s-blocked" style="font-size:10px;">${r.tag}</span></span>
+      <span class="obj">${r.label}</span>
+      <span class="status-pill ${r.statusClass}">${r.statusLabel}</span>
+    </div>
+  `).join("");
+}
+
+function renderDefectTable(){
+  const rows = OPEN_DEFECT_DATA
+    .filter(d => daysUntil(d.targetRetestDate) < 0)
+    .sort((a,b)=> daysUntil(a.targetRetestDate) - daysUntil(b.targetRetestDate));
+
+  document.getElementById("defectTableBody").innerHTML = rows.length ? rows.map(d=>`
+    <tr>
+      <td class="defect-key">${d.key}</td>
+      <td>${d.summary}</td>
+      <td><span class="sl-pill">${d.subledger}</span></td>
+      <td>${d.relatedObject}</td>
+      <td><span class="status-pill ${SEVERITY_CLASS[d.severity]}">${d.severity}</span></td>
+      <td><span class="status-pill ${DEFECT_STATUS_CLASS[d.status]}">${d.status}</span></td>
+      <td>${d.owner}</td>
+      <td class="mono">${d.targetRetestDate}</td>
+      <td>${d.notes ? d.notes : "<span style='color:#B5AC9E;'>—</span>"}</td>
+    </tr>
+  `).join("") : `<tr><td colspan="9" class="no-rows" style="display:table-cell;">No overdue defects right now.</td></tr>`;
+}
+
+function downloadCsv(){
+  const rows = filteredData();
+  const headers = ["Jira Key","Conversion Object","Subledger","Phase","Owner","Source","Status","% Complete","Checklist Done","Checklist Total","Due Date","Priority","Blocker/Notes"];
+  const lines = [headers.join(",")];
+
+  rows.forEach(r=>{
+    const pct = pctComplete(r);
+    const done = r.checklist.filter(c=>c.done).length;
+    const csvSafe = (v)=> `"${String(v).replace(/"/g,'""')}"`;
+    lines.push([
+      r.key, r.object, r.subledger, r.phase, r.owner, r.environment, r.status,
+      pct+"%", done, r.checklist.length, r.dueDate, r.priority, r.blocker
+    ].map(csvSafe).join(","));
+  });
+
+  const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `oracle_conversion_tracker_${state.phase==="all"?"all":state.phase.toLowerCase()}_${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function renderSummary(){
+  const rows = ACTIVE_DATA; // Execution only (Preparation tab is hidden)
+  const total = rows.length;
+  const blocked = rows.filter(r=>r.status==="Blocked").length;
+  const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
+
+  // Sub-task-level breakdown (not object-level) — "we're tracking by
+  // sub-task." A sub-task counts as "in progress" only when it's the
+  // current (first incomplete) step on an object whose Jira status is
+  // In Progress; everything else not-yet-done is "not started."
+  let totalSteps = 0, doneSteps = 0, inProgressSteps = 0;
+  rows.forEach(r=>{
+    const nextIdx = r.checklist.findIndex(c=>!c.done);
+    r.checklist.forEach((c,idx)=>{
+      totalSteps++;
+      if(c.done){ doneSteps++; return; }
+      if(idx===nextIdx && r.status==="In Progress") inProgressSteps++;
+    });
+  });
+  const notStartedSteps = totalSteps - doneSteps - inProgressSteps;
+
+  const openDefects = OPEN_DEFECT_DATA;
+  const criticalDefects = openDefects.filter(d => d.severity==="Critical");
+  const atRisk = atRiskObjectRows();
+
+  document.getElementById("execStatusText").innerHTML =
+    `Conversion Execution is <strong>${avgPct}% complete</strong> across <strong>${totalSteps}</strong> sub-tasks in <strong>${total}</strong> active conversion objects — `
+    + `${doneSteps} completed, ${inProgressSteps} in progress, ${notStartedSteps} not started`
+    + `${blocked>0 ? `, and <strong>${blocked} blocked</strong> object${blocked===1?"":"s"}` : ""}. `
+    + `${openDefects.length} open defect${openDefects.length===1?"":"s"} remain across the program`
+    + `${criticalDefects.length>0 ? `, including <strong>${criticalDefects.length} critical</strong>` : ""}. `
+    + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within ${AT_RISK_SOON_DAYS} days — see At Risk.` : "Nothing is at risk of slipping in the next few days."}`;
+
+  // Upcoming: the next incomplete subtask (checklist step) for each active
+  // object, not the object's overall end date — "we're tracking by
+  // subtask", per Hannah's review. Soonest subtask due date first.
+  const upcomingSteps = [];
+  rows.forEach(r=>{
+    if(r.status==="Complete") return;
+    const nextStep = (r.checklist||[]).find(c=>!c.done);
+    if(!nextStep) return;
+    const d = daysUntil(nextStep.dueDate);
+    if(d>=9999) return;
+    upcomingSteps.push({ subledger:r.subledger, object:r.object, stepLabel:nextStep.label, days:d });
+  });
+  upcomingSteps.sort((a,b)=>a.days-b.days);
+  const upcoming = upcomingSteps.slice(0,4);
+
+  document.getElementById("execUpcomingList").innerHTML = upcoming.length ? upcoming.map(u=>{
+    const when = u.days<0 ? `overdue ${Math.abs(u.days)}d` : u.days===0 ? "due today" : `due in ${u.days}d`;
+    return `<li><span class="sl-pill" style="margin-right:6px;">${u.subledger}</span>${u.object} — <em>${u.stepLabel}</em> <span class="exec-meta">— ${when}</span></li>`;
+  }).join("") : `<li class="exec-empty">Nothing due in the near term.</li>`;
+
+  // At Risk: current sub-task not yet overdue but due within AT_RISK_SOON_DAYS
+  document.getElementById("execAtRiskList").innerHTML = atRisk.length ? atRisk.map(r=>{
+    const cur = currentSubtask(r);
+    const when = cur.days===0 ? "due today" : `due in ${cur.days}d`;
+    return `<li><span class="sl-pill" style="margin-right:6px;">${r.subledger}</span>${r.object} — <em>${cur.step.label}</em> <span class="exec-meta at-risk">— ${when}</span></li>`;
+  }).join("") : `<li class="exec-empty">Nothing at risk of slipping right now.</li>`;
+
+  // Key blockers: blocked objects + objects with an overdue current sub-task
+  // + critical open defects
+  const blockedObjs = objectRiskRows().map(r=>{
+    const cur = currentSubtask(r);
+    const detail = r.status==="Blocked" ? (r.blocker || "Blocked") : `Sub-task overdue · ${cur.step.label}`;
+    return { label:r.object, subledger:r.subledger, detail };
+  });
+  const criticalItems = criticalDefects.map(d=>({
+    label:d.summary, subledger:d.subledger, detail:`Critical defect · ${d.status}`
+  }));
+  const blockerItems = [...blockedObjs, ...criticalItems];
+
+  document.getElementById("execBlockersList").innerHTML = blockerItems.length
+    ? blockerItems.slice(0,6).map(b=>`<li><span class="sl-pill" style="margin-right:6px;">${b.subledger}</span>${b.label} <span class="exec-meta">— ${b.detail}</span></li>`).join("")
+    : `<li class="exec-empty">No blockers or critical defects right now.</li>`;
+}
+
+function renderAll(){
+  renderSummary();
+  renderRisks();
+  renderKPIs();
+  renderManifests();
+  renderObjectGroups();
+  renderDefectTable();
+}
+
+// ---- event wiring ----
+document.querySelectorAll('.phase-tab[data-toplevel]').forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll('.phase-tab[data-toplevel]').forEach(b=>{b.classList.remove("active"); b.setAttribute("aria-selected","false");});
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected","true");
+    const isPrep = btn.dataset.toplevel==="prep";
+    document.getElementById("prepPlaceholder").style.display = isPrep ? "block" : "none";
+    document.getElementById("dataConversionView").style.display = isPrep ? "none" : "block";
+  });
+});
+
+function wireMultiSelectChips(filterType, stateSet){
+  const chips = document.querySelectorAll(`.chip[data-filter-type="${filterType}"]`);
+  const allChip = document.querySelector(`.chip[data-filter-type="${filterType}"][data-value="all"]`);
+
+  function syncActiveClasses(){
+    if(stateSet.size===0){
+      allChip.classList.add("active");
+      chips.forEach(c=>{ if(c!==allChip) c.classList.remove("active"); });
+    } else {
+      allChip.classList.remove("active");
+      chips.forEach(c=>{
+        if(c===allChip) return;
+        c.classList.toggle("active", stateSet.has(c.dataset.value));
+      });
+    }
+  }
+
+  chips.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      if(btn.dataset.value==="all"){
+        stateSet.clear();
+      } else {
+        if(stateSet.has(btn.dataset.value)) stateSet.delete(btn.dataset.value);
+        else stateSet.add(btn.dataset.value);
+      }
+      syncActiveClasses();
+      renderObjectGroups();
+    });
+  });
+}
+
+wireMultiSelectChips("subledger", state.subledgers);
+wireMultiSelectChips("status", state.statuses);
+
+document.getElementById("searchInput").addEventListener("input", (e)=>{
+  state.search = e.target.value;
+  renderObjectGroups();
+});
+
+document.getElementById("exportCsvBtn").addEventListener("click", downloadCsv);
+
+renderAll();
+</script>
+</body>
+</html>
