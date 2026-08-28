@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oracle Cloud Conversion Tracker — AP / FA / PA — P2 Cycle</title>
+<title>Wave 3 P2 Testing Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -107,20 +107,6 @@
     font-size:12.5px;
     color:#D9C9B8;
   }
-  .cycle-pill{
-    background:var(--brown-800);
-    border:1px solid var(--brown-700);
-    color:var(--gold-100);
-    font-size:12.5px;
-    font-weight:600;
-    padding:7px 14px;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    white-space:nowrap;
-  }
-  .cycle-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold-500);}
   .asof-block{
     text-align:right;
     max-width:240px;
@@ -231,17 +217,10 @@
   }
   .prep-placeholder-icon{font-size:28px;margin-bottom:10px;}
   .prep-placeholder h3{
-    margin:0 0 8px;
+    margin:0;
     font-family:'Barlow Semi Condensed',sans-serif;
     font-size:18px;
     color:var(--brown-950);
-  }
-  .prep-placeholder p{
-    margin:0 auto;
-    max-width:560px;
-    font-size:13.5px;
-    color:var(--ink-600);
-    line-height:1.55;
   }
 
   /* ===== KPI ROW ===== */
@@ -591,10 +570,9 @@
     <img class="brand-logo" src="assets/ups-logo.png" alt="UPS">
     <div class="brandblock">
       <div class="co">United Parcel Service &nbsp;•&nbsp; Financial Cloud Ecosystem</div>
-      <h1>Oracle Cloud Conversion Tracker</h1>
+      <h1>Wave 3 P2 Testing Tracker</h1>
       <div class="sub">Source to Pay · Acquire to Retire · Plan to Report</div>
     </div>
-    <div class="cycle-pill"><span class="dot"></span>P2 Conversion Cycle</div>
     <div class="asof-block">
       <div class="asof-label">Last updated</div>
       <div class="asof-date" id="lastUpdatedStamp"></div>
@@ -631,15 +609,14 @@
   </div>
 
   <div class="phase-tabs" role="tablist" aria-label="P2 program area">
-    <button class="phase-tab" data-toplevel="prep" role="tab" aria-selected="false">P2 Prep</button>
     <button class="phase-tab active" data-toplevel="conversion" role="tab" aria-selected="true">Data Conversion</button>
+    <button class="phase-tab" data-toplevel="prep" role="tab" aria-selected="false">P2 Prep</button>
   </div>
 
   <!-- P2 PREP — placeholder until Matias's prep item list & dates are finalized -->
   <div id="prepPlaceholder" class="prep-placeholder" style="display:none;">
     <div class="prep-placeholder-icon">🗓️</div>
-    <h3>P2 Prep tracking coming soon</h3>
-    <p>Data conversion is one workstream inside broader P2 prep. Once Matias finalizes the P2 prep item list and target dates, this tab will get the same structure as Data Conversion — status, upcoming items, and risks &amp; blockers.</p>
+    <h3>P2 Prep tracking coming soon!</h3>
   </div>
 
   <div id="dataConversionView">
