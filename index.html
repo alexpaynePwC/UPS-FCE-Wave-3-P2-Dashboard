@@ -549,28 +549,6 @@
   .blocker-note{color:var(--c-blocked);font-size:12px;}
   .no-rows{padding:36px;text-align:center;color:var(--gray-500);font-size:13.5px;}
 
-  /* ===== INFO / DATA-SOURCE PANEL ===== */
-  .info-panel{
-    background:var(--gold-100);
-    border:1px solid var(--gold-600);
-    border-radius:var(--radius);
-    padding:16px 18px;
-  }
-  .info-panel summary{
-    cursor:pointer;
-    font-weight:700;
-    font-family:'Barlow Semi Condensed',sans-serif;
-    font-size:15.5px;
-    color:var(--brown-900);
-    list-style:none;
-  }
-  .info-panel summary::-webkit-details-marker{display:none;}
-  .info-panel summary::before{content:"▸ ";}
-  .info-panel[open] summary::before{content:"▾ ";}
-  .info-panel p, .info-panel li{font-size:13px;color:var(--ink-600);line-height:1.55;}
-  .info-panel ul{margin:8px 0 0;padding-left:20px;}
-  .info-panel code{background:#fff;padding:1px 5px;border-radius:4px;border:1px solid var(--gold-600);}
-
   footer{
     text-align:center;
     font-size:11.5px;
@@ -724,27 +702,7 @@
 
   </div> <!-- /#dataConversionView -->
 
-  <!-- INFO / HOW TO UPDATE -->
-  <details class="info-panel">
-    <summary>How this dashboard gets updated (read before showing to leadership)</summary>
-    <p><strong>Data Conversion</strong> reflects the latest Jira export ("Concourse - Jira 2026-08-27T17_11_00+0000.csv", UPS FCE Wave 3 / Test Cycle P2 — 112 conversion sub-tasks rolled up into 14 objects). The <strong>P2 Prep</strong> tab is a placeholder — Matias is still finalizing the P2 prep item list and dates; once that's ready it'll get built out with the same structure. Defects were not in this export, so that table is still from the prior defect file.</p>
-    <p>Until Jira is reachable from outside the network, this dashboard is intended to run on <strong>manually refreshed data</strong>:</p>
-    <ul>
-      <li>Every record lives in one JavaScript array (<code>CONVERSION_DATA</code>) near the top of this file's <code>&lt;script&gt;</code> block.</li>
-      <li>Each record's fields (<code>key, subledger, object, phase, status, owner, environment, dueDate, priority, blocker, checklist</code>) are named to match likely Jira export fields, so a CSV pulled from Jira on-prem can be re-mapped into this array with minimal rework.</li>
-      <li><strong>% Complete is never typed in by hand.</strong> Each record has a <code>checklist</code> array (the 8 real Jira sub-task steps: Extract Data, Profile Data, etc.), each carrying its own <code>dueDate</code> pulled from Jira. Checking items off (<code>done: true</code>) automatically recalculates the % everywhere on the page. The Executive Summary's "Upcoming" list surfaces the next incomplete sub-task per object (not the object's overall end date), since the team tracks progress by sub-task.</li>
-      <li>The <strong>Risks &amp; Blockers</strong> panel lists any "Blocked" object, any object whose <strong>current sub-task</strong> is past its planned date, and every open <strong>Critical or High</strong>-severity defect. It no longer flags objects just because their overall end date is approaching — only an actually-overdue current sub-task counts. The Executive Summary's "Key Blockers" box mirrors the object/Critical-defect half of that list.</li>
-      <li>The Executive Summary's <strong>At Risk</strong> column is a separate, softer signal: objects whose current sub-task isn't overdue yet but is due within <code>AT_RISK_SOON_DAYS</code> (currently 3) days — a heads-up before something slips, not yet a blocker.</li>
-      <li>The <strong>Download CSV</strong> button exports whatever is currently visible in the table (respecting active filters/search) — useful for pasting into a leadership deck or status email.</li>
-      <li>Recommended cadence: export from Jira → team lead updates the array (or a linked CSV) → refresh the page before each status meeting.</li>
-      <li>If/when Jira moves to Atlassian Cloud, this same array can be populated by a scheduled sync script instead of by hand — the dashboard itself doesn't need to change.</li>
-      <li>A <strong>Purchasing</strong> module (Purchase Orders, PO Receipts, Item Master) and a <strong>Cash Management</strong> module (Internal Banks, Branches and Accounts) were both added on request — neither is part of UPS's core AP/FA/PA subledger scope, but both were present in the same Jira export. The subledger cards are ordered Cash Management → Purchasing → Project Accounting → AP/FA, matching the team's real conversion sequence.</li>
-      <li>The <strong>Defects Requiring Retest</strong> table shows only <strong>overdue</strong> defects — open (not Withdrawn/Resolved) and past their target retest date. Open defects with no due date, or a due date still in the future, won't appear here even though they still count toward the Executive Summary and Risks &amp; Blockers where applicable. Sourced from the real Jira defect export ("Concourse_-_Jira_2026-08-25T22_02_00_0000.csv"). "Related Object" is parsed from each defect's summary text rather than a clean Jira field, so double-check it before quoting it to leadership.</li>
-      <li>The <strong>Conversion Objects</strong> list is grouped by workstream (Source to Pay, Acquire to Retire, Plan to Report — mapped from each object's subledger) with the 8 Jira sub-task stages shown inline as pills (green = done, gold = in progress and on track, red = past its planned date, gray = not reached yet). Hover a pill for its full stage name. This replaced an earlier click-to-expand version — if this new layout doesn't land well, say so and it's a quick revert.</li>
-    </ul>
-  </details>
-
-  <footer>Draft for internal review · Not connected to live Jira data · Oracle Cloud ERP Conversion Program</footer>
+  <footer>Not connected to live Jira data</footer>
 </div>
 
 <script>
