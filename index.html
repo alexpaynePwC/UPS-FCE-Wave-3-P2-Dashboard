@@ -121,6 +121,30 @@
     white-space:nowrap;
   }
   .cycle-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold-500);}
+  .asof-block{
+    text-align:right;
+    max-width:190px;
+    line-height:1.3;
+  }
+  .asof-block .asof-label{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:#B9A793;
+    font-weight:600;
+  }
+  .asof-block .asof-date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--gold-100);
+    font-weight:600;
+    margin-top:2px;
+  }
+  .asof-block .asof-note{
+    font-size:10.5px;
+    color:#B9A793;
+    margin-top:3px;
+  }
 
   /* ===== CONTAINER ===== */
   .wrap{max-width:1360px;margin:0 auto;padding:26px 24px 60px;}
@@ -345,12 +369,19 @@
   .risk-list{padding:4px 0;}
   .risk-item{
     display:grid;
-    grid-template-columns:190px 44px 80px 1fr auto;
+    grid-template-columns:190px 44px 80px 1fr 92px auto;
     align-items:center;
     gap:12px;
     padding:10px 16px;
     border-bottom:1px solid var(--cream-200);
     font-size:13px;
+  }
+  .risk-item .due{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-600);
+    white-space:nowrap;
+    justify-self:end;
   }
   .risk-item:last-child{border-bottom:none;}
   .risk-item .key-cell{
@@ -581,6 +612,11 @@
       <div class="sub">Source to Pay · Acquire to Retire · Plan to Report</div>
     </div>
     <div class="cycle-pill"><span class="dot"></span>P2 Conversion Cycle</div>
+    <div class="asof-block">
+      <div class="asof-label">Last updated</div>
+      <div class="asof-date">27 Aug 2026</div>
+      <div class="asof-note">Not live Jira — refresh before status calls</div>
+    </div>
   </div>
 </div>
 
@@ -678,8 +714,8 @@
 
   <!-- DEFECTS REQUIRING RETEST -->
   <div class="section-heading">
-    <h2>Defects Requiring Retest — P2</h2>
-    <span class="section-sub">Overdue only — past their target retest date and still open</span>
+    <h2>Overdue Defects</h2>
+    <span class="section-sub">Open defects past their target retest date, ordered by severity</span>
   </div>
   <div class="table-wrap defects-wrap">
     <table>
@@ -952,14 +988,20 @@ function renderKPIs(){
   const total = rows.length;
   const complete = rows.filter(r=>r.status==="Complete").length;
   const blocked = rows.filter(r=>r.status==="Blocked").length;
-  const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
+  const totalSteps = rows.reduce((a,r)=>a+r.checklist.length,0);
+  const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+  const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
+  const overdue = rows.filter(r=>{
+    const cur = currentSubtask(r);
+    return cur && cur.days<0;
+  }).length;
 
   const cards = [
     { label:"Conversion Objects in Scope", value:total, foot: "Execution", cls:"" },
-    { label:"Average % Complete", value:avgPct+"%", foot:"Across objects in view", cls:"" },
+    { label:"Completion", value:pct+"%", foot:doneSteps+" of "+totalSteps+" sub-tasks done", cls:"" },
     { label:"Objects Blocked", value:blocked, foot:"Need escalation", cls: blocked>0 ? "blocked" : "" },
     { label:"Objects Complete", value:complete+" <small>/ "+total+"</small>", foot:"Fully converted & validated", cls:"" },
-    { label:"Overdue Items", value:"—", foot:"Placeholder — overdue sub-tasks", cls:"" },
+    { label:"Overdue Items", value:overdue, foot:"Objects with a sub-task past planned date", cls: overdue>0 ? "blocked" : "" },
   ];
 
   document.getElementById("kpiRow").innerHTML = cards.map(c=>`
@@ -978,7 +1020,9 @@ function renderManifests(){
   document.getElementById("manifestRow").innerHTML = subledgers.map(sl=>{
     const rows = scope.filter(r=>r.subledger===sl);
     const total = rows.length;
-    const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
+    const totalSteps = rows.reduce((a,r)=>a+r.checklist.length,0);
+    const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+    const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
     const byStatus = ["Not Started","In Progress","Blocked","Complete"].map(st=>({
       st, n: rows.filter(r=>r.status===st).length
     })).filter(x=>x.n>0);
@@ -991,8 +1035,8 @@ function renderManifests(){
         </div>
         <div class="manifest-body">
           <div class="count-line"><span>Objects in scope</span><b>${total}</b></div>
-          <div class="progress-track"><div class="progress-fill" style="width:${avgPct}%"></div></div>
-          <div class="count-line"><span>Average completion</span><b>${avgPct}%</b></div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="count-line"><span>Completion</span><b>${pct}%</b></div>
           <div class="status-chip-row">
             ${byStatus.map(x=>`<span class="status-mini ${STATUS_CLASS[x.st]}"><span class="n">${x.n}</span>${x.st}</span>`).join("")}
           </div>
@@ -1128,7 +1172,7 @@ function objectRiskRows(){
 
 // "At risk" — current sub-task not yet overdue, but due within this many
 // days, so it's worth calling out before it slips.
-const AT_RISK_SOON_DAYS = 3;
+const AT_RISK_SOON_DAYS = 1;
 function atRiskObjectRows(){
   const scope = ACTIVE_DATA;
   return scope.filter(r=>{
@@ -1153,6 +1197,7 @@ function renderRisks(){
       type:"object", tag: isBlocked ? "BLOCKED" : "SUBTASK",
       key:r.key, subledger:r.subledger,
       label: cur ? `${r.object} — ${cur.step.label}` : r.object,
+      dueDate: cur ? cur.step.dueDate : r.dueDate,
       statusLabel: isBlocked ? "Blocked" : "Past planned date",
       statusClass: isBlocked ? STATUS_CLASS["Blocked"] : "s-blocked",
       sortDays: cur ? cur.days : daysUntil(r.dueDate),
@@ -1162,6 +1207,7 @@ function renderRisks(){
 
   const defectRisks = defectRiskRows().map(d=>({
     type:"defect", tag:"DEFECT", key:d.key, subledger:d.subledger, label:d.summary,
+    dueDate: d.targetRetestDate,
     statusLabel:`${d.severity} · ${d.status}`, statusClass:SEVERITY_CLASS[d.severity],
     sortDays: daysUntil(d.targetRetestDate),
     rank: d.severity==="Critical" ? 0 : 1
@@ -1183,15 +1229,17 @@ function renderRisks(){
       <span class="sl-pill">${r.subledger}</span>
       <span class="defect-tag"><span class="status-pill s-blocked" style="font-size:10px;">${r.tag}</span></span>
       <span class="obj">${r.label}</span>
+      <span class="due">${r.dueDate ? formatDateShort(r.dueDate) : "—"}</span>
       <span class="status-pill ${r.statusClass}">${r.statusLabel}</span>
     </div>
   `).join("");
 }
 
 function renderDefectTable(){
+  const sevRank = { Critical:0, High:1, Medium:2, Low:3, "Not Set":4 };
   const rows = OPEN_DEFECT_DATA
     .filter(d => daysUntil(d.targetRetestDate) < 0)
-    .sort((a,b)=> daysUntil(a.targetRetestDate) - daysUntil(b.targetRetestDate));
+    .sort((a,b)=> (sevRank[a.severity]??9) - (sevRank[b.severity]??9) || daysUntil(a.targetRetestDate) - daysUntil(b.targetRetestDate));
 
   document.getElementById("defectTableBody").innerHTML = rows.length ? rows.map(d=>`
     <tr>
@@ -1266,7 +1314,7 @@ function renderSummary(){
     + `${blocked>0 ? `, and <strong>${blocked} blocked</strong> object${blocked===1?"":"s"}` : ""}. `
     + `${openDefects.length} open defect${openDefects.length===1?"":"s"} remain across the program`
     + `${criticalDefects.length>0 ? `, including <strong>${criticalDefects.length} critical</strong>` : ""}. `
-    + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within ${AT_RISK_SOON_DAYS} days — see At Risk.` : "Nothing is at risk of slipping in the next few days."}`;
+    + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within 24 hours — see At Risk.` : "Nothing is at risk of slipping in the next 24 hours."}`;
 
   // Upcoming: the next incomplete subtask (checklist step) for each active
   // object, not the object's overall end date — "we're tracking by
