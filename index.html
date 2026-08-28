@@ -965,7 +965,7 @@ function renderKPIs(){
   }).length;
 
   const cards = [
-    { label:"Conversion Objects in Scope", value:total, foot: "Execution", cls:"" },
+    { label:"Conversion Objects in Scope", value:total, foot: "In scope", cls:"" },
     { label:"Completion", value:pct+"%", foot:doneSteps+" of "+totalSteps+" sub-tasks done", cls:"" },
     { label:"Objects Blocked", value:blocked, foot:"Need escalation", cls: blocked>0 ? "blocked" : "" },
     { label:"Objects Complete", value:complete+" <small>/ "+total+"</small>", foot:"Fully converted & validated", cls:"" },
