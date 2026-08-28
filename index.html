@@ -123,7 +123,7 @@
   .cycle-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--gold-500);}
   .asof-block{
     text-align:right;
-    max-width:190px;
+    max-width:240px;
     line-height:1.3;
   }
   .asof-block .asof-label{
@@ -139,11 +139,6 @@
     color:var(--gold-100);
     font-weight:600;
     margin-top:2px;
-  }
-  .asof-block .asof-note{
-    font-size:10.5px;
-    color:#B9A793;
-    margin-top:3px;
   }
 
   /* ===== CONTAINER ===== */
@@ -271,6 +266,7 @@
     background:var(--gold-500);
   }
   .kpi-card.blocked::before{background:var(--c-blocked);}
+  .kpi-card.overdue::before{background:var(--stage-atrisk);}
   .kpi-card .kpi-label{
     font-size:11.5px;text-transform:uppercase;letter-spacing:0.08em;
     color:var(--ink-600);font-weight:600;margin-bottom:6px;
@@ -410,19 +406,6 @@
     margin-bottom:16px;
     box-shadow:var(--shadow);
   }
-  .btn-export{
-    border:1px solid var(--brown-800);
-    background:var(--brown-900);
-    color:#fff;
-    font-size:12.5px;
-    font-weight:600;
-    padding:7px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    font-family:'Inter',sans-serif;
-    white-space:nowrap;
-  }
-  .btn-export:hover{background:var(--brown-800);}
   .filter-group{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
   .filter-group .fg-label{font-size:11.5px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-right:2px;}
   .chip{
@@ -614,8 +597,7 @@
     <div class="cycle-pill"><span class="dot"></span>P2 Conversion Cycle</div>
     <div class="asof-block">
       <div class="asof-label">Last updated</div>
-      <div class="asof-date">27 Aug 2026</div>
-      <div class="asof-note">Not live Jira — refresh before status calls</div>
+      <div class="asof-date" id="lastUpdatedStamp"></div>
     </div>
   </div>
 </div>
@@ -693,8 +675,7 @@
       <button class="chip" data-filter-type="status" data-value="Blocked">Blocked</button>
       <button class="chip" data-filter-type="status" data-value="Complete">Complete</button>
     </div>
-    <input type="text" class="search-input" id="searchInput" placeholder="Search object, owner, or Jira key…">
-    <button class="btn-export" id="exportCsvBtn">⭳ Download CSV</button>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search object or Jira key…">
   </div>
 
   <!-- CONVERSION OBJECTS — grouped by workstream, stage pills per object -->
@@ -928,6 +909,16 @@ function pctComplete(row){
 }
 
 const TODAY = new Date("2026-08-27");
+const LAST_REFRESHED = new Date("2026-08-27T17:11:00Z");
+function formatEasternStamp(d){
+  const date = new Intl.DateTimeFormat("en-US", {
+    timeZone:"America/New_York", month:"short", day:"numeric", year:"numeric"
+  }).format(d);
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone:"America/New_York", hour:"numeric", minute:"2-digit", hour12:true
+  }).format(d);
+  return `${date}, ${time} EST`;
+}
 function daysUntil(dateStr){
   if(!dateStr) return 9999; // no due date on file — don't treat as urgent/overdue
   const d = new Date(dateStr);
@@ -977,7 +968,7 @@ function filteredData(){
     if(state.statuses.size>0 && !state.statuses.has(r.status)) return false;
     if(state.search){
       const s = state.search.toLowerCase();
-      if(!(r.object.toLowerCase().includes(s) || r.owner.toLowerCase().includes(s) || r.key.toLowerCase().includes(s))) return false;
+      if(!(r.object.toLowerCase().includes(s) || r.key.toLowerCase().includes(s))) return false;
     }
     return true;
   });
@@ -1001,7 +992,7 @@ function renderKPIs(){
     { label:"Completion", value:pct+"%", foot:doneSteps+" of "+totalSteps+" sub-tasks done", cls:"" },
     { label:"Objects Blocked", value:blocked, foot:"Need escalation", cls: blocked>0 ? "blocked" : "" },
     { label:"Objects Complete", value:complete+" <small>/ "+total+"</small>", foot:"Fully converted & validated", cls:"" },
-    { label:"Overdue Items", value:overdue, foot:"Objects with a sub-task past planned date", cls: overdue>0 ? "blocked" : "" },
+    { label:"Overdue Items", value:overdue, foot:"Objects with a sub-task past planned date", cls: overdue>0 ? "overdue" : "" },
   ];
 
   document.getElementById("kpiRow").innerHTML = cards.map(c=>`
@@ -1256,33 +1247,6 @@ function renderDefectTable(){
   `).join("") : `<tr><td colspan="9" class="no-rows" style="display:table-cell;">No overdue defects right now.</td></tr>`;
 }
 
-function downloadCsv(){
-  const rows = filteredData();
-  const headers = ["Jira Key","Conversion Object","Subledger","Phase","Owner","Source","Status","% Complete","Checklist Done","Checklist Total","Due Date","Priority","Blocker/Notes"];
-  const lines = [headers.join(",")];
-
-  rows.forEach(r=>{
-    const pct = pctComplete(r);
-    const done = r.checklist.filter(c=>c.done).length;
-    const csvSafe = (v)=> `"${String(v).replace(/"/g,'""')}"`;
-    lines.push([
-      r.key, r.object, r.subledger, r.phase, r.owner, r.environment, r.status,
-      pct+"%", done, r.checklist.length, r.dueDate, r.priority, r.blocker
-    ].map(csvSafe).join(","));
-  });
-
-  const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const stamp = new Date().toISOString().slice(0,10);
-  a.href = url;
-  a.download = `oracle_conversion_tracker_${state.phase==="all"?"all":state.phase.toLowerCase()}_${stamp}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
 function renderSummary(){
   const rows = ACTIVE_DATA; // Execution only (Preparation tab is hidden)
   const total = rows.length;
@@ -1361,6 +1325,8 @@ function renderSummary(){
 }
 
 function renderAll(){
+  const stamp = document.getElementById("lastUpdatedStamp");
+  if(stamp) stamp.textContent = formatEasternStamp(LAST_REFRESHED);
   renderSummary();
   renderRisks();
   renderKPIs();
@@ -1419,8 +1385,6 @@ document.getElementById("searchInput").addEventListener("input", (e)=>{
   state.search = e.target.value;
   renderObjectGroups();
 });
-
-document.getElementById("exportCsvBtn").addEventListener("click", downloadCsv);
 
 renderAll();
 </script>
