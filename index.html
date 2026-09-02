@@ -1274,7 +1274,7 @@ function renderSummary(){
     + `${blocked>0 ? `, and <strong>${blocked} blocked</strong> object${blocked===1?"":"s"}` : ""}. `
     + `${openDefects.length} open defect${openDefects.length===1?"":"s"} remain across the program`
     + `${criticalDefects.length>0 ? `, including <strong>${criticalDefects.length} critical</strong>` : ""}. `
-    + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within 24 hours — see At Risk.` : "Nothing is at risk of slipping in the next 24 hours."}`;
+    + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within 24 hours — see At Risk.` : "Nothing currently in progress which is due in the next 24 hours."}`;
 
   // Upcoming: the next incomplete subtask (checklist step) for each active
   // object, not the object's overall end date — "we're tracking by
@@ -1301,7 +1301,7 @@ function renderSummary(){
     const cur = currentSubtask(r);
     const when = cur.days===0 ? "due today" : `due in ${cur.days}d`;
     return `<li><span class="sl-pill" style="margin-right:6px;">${r.subledger}</span>${r.object} — <em>${cur.step.label}</em> <span class="exec-meta at-risk">— ${when}</span></li>`;
-  }).join("") : `<li class="exec-empty">Nothing at risk of slipping right now.</li>`;
+  }).join("") : `<li class="exec-empty">Nothing currently in progress which is due in the next 24 hours.</li>`;
 
   // Key blockers: blocked objects + objects with an overdue current sub-task
   // + critical open defects
