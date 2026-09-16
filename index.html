@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wave 3 P2 Testing Tracker</title>
+<title>Wave 3 Release 1 - P2 Conversion Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -26,8 +26,8 @@
 
     --c-complete:#1F7A46;
     --c-complete-bg:#E4F3E9;
-    --c-progress:#B8790A;
-    --c-progress-bg:#FCEDD2;
+    --c-progress:#1F7A46;
+    --c-progress-bg:#E4F3E9;
     --c-blocked:#B23A3A;
     --c-blocked-bg:#FBE4E4;
     --c-notstarted:#736A5E;
@@ -125,6 +125,11 @@
     color:var(--gold-100);
     font-weight:600;
     margin-top:2px;
+  }
+  .asof-block .pull-cadence{
+    font-size:10.5px;
+    color:#D9C9B8;
+    margin-top:3px;
   }
 
   /* ===== CONTAINER ===== */
@@ -310,17 +315,28 @@
   .s-complete{background:var(--c-complete-bg);color:var(--c-complete);}
   .s-progress{background:var(--c-progress-bg);color:var(--c-progress);}
   .s-blocked{background:var(--c-blocked-bg);color:var(--c-blocked);}
+  .s-jira-blocked{background:var(--brown-800);color:#fff;}
+  .s-high{background:var(--gold-100);color:var(--stage-atrisk-ink);}
   .s-notstarted{background:var(--c-notstarted-bg);color:var(--c-notstarted);}
 
   /* ===== RISKS & BLOCKERS ROLLUP ===== */
+  .risk-stack{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    margin-bottom:26px;
+  }
   .risk-panel{
     background:#fff;
     border:1px solid var(--c-blocked);
     border-radius:var(--radius);
     box-shadow:var(--shadow);
-    margin-bottom:26px;
+    margin-bottom:0;
     overflow:hidden;
   }
+  .risk-panel.risk-only{border-color:var(--stage-atrisk);}
+  .risk-panel.risk-only .risk-panel-head{background:var(--gold-100);color:var(--stage-atrisk-ink);}
+  .risk-panel.risk-only .risk-panel-head .n{background:var(--stage-atrisk-ink);}
   .risk-panel-head{
     background:var(--c-blocked-bg);
     color:var(--c-blocked);
@@ -343,7 +359,7 @@
   .risk-list{padding:4px 0;}
   .risk-item{
     display:grid;
-    grid-template-columns:190px 44px 80px 1fr 92px auto;
+    grid-template-columns:minmax(145px,190px) 44px 1fr 72px auto;
     align-items:center;
     gap:12px;
     padding:10px 16px;
@@ -383,6 +399,10 @@
     padding:12px 14px;
     margin-bottom:16px;
     box-shadow:var(--shadow);
+  }
+  #defectFilterBar{
+    flex-wrap:wrap;
+    row-gap:10px;
   }
   .filter-group{display:flex;gap:5px;align-items:center;flex-wrap:nowrap;flex-shrink:0;}
   .filter-group .fg-label{font-size:11.5px;color:var(--gray-500);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-right:2px;}
@@ -498,6 +518,7 @@
   .stage-current{background:var(--stage-ontrack);color:#fff;}
   .stage-atrisk{background:var(--stage-atrisk);color:var(--stage-atrisk-ink);}
   .stage-overdue{background:var(--c-blocked);color:#fff;}
+  .stage-blocker{background:var(--brown-800);color:#fff;}
   .stage-pending{background:var(--cream-200);color:var(--gray-500);}
   .obj-count{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-600);text-align:right;white-space:nowrap;}
   .obj-daterange{font-size:12px;color:var(--ink-600);white-space:nowrap;}
@@ -506,6 +527,7 @@
   .obj-next.next-current{color:var(--stage-ontrack);}
   .obj-next.next-atrisk{color:var(--stage-atrisk-ink);}
   .obj-next.next-overdue{color:var(--c-blocked);}
+  .obj-next.next-blocker{color:var(--brown-800);}
   .obj-next.next-pending{color:var(--gray-500);}
   @media (max-width:1000px){
     .obj-row2{grid-template-columns:1fr;gap:6px;}
@@ -526,6 +548,40 @@
   .legend-dot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle;}
   .legend-sep{color:var(--line);}
   .legend-stages{color:var(--gray-500);font-size:11.5px;}
+  .data-guide{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    margin-bottom:26px;
+    padding:0 16px;
+  }
+  .data-guide summary{
+    cursor:pointer;
+    padding:13px 0;
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:700;
+    color:var(--brown-900);
+  }
+  .data-guide-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px 24px;
+    padding:0 0 16px;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink-600);
+  }
+  .data-guide-grid p{margin:0;}
+  .data-guide-grid strong{color:var(--brown-900);}
+  .scope-note{
+    border-left:3px solid var(--gold-500);
+    background:var(--gold-100);
+    padding:9px 12px;
+    margin:0 0 16px;
+    font-size:12px;
+    color:var(--ink-600);
+  }
   .sl-pill{
     font-family:'IBM Plex Mono',monospace;
     font-size:11px;font-weight:700;
@@ -560,6 +616,7 @@
     .filter-group{flex-wrap:wrap;}
     .search-input{margin-left:0;width:100%;flex:1 1 100%;}
     table{font-size:12px;}
+    .data-guide-grid{grid-template-columns:1fr;}
   }
 
   @media (prefers-reduced-motion:no-preference){
@@ -574,12 +631,13 @@
     <img class="brand-logo" src="assets/ups-logo.png" alt="UPS">
     <div class="brandblock">
       <div class="co">United Parcel Service &nbsp;•&nbsp; Financial Cloud Ecosystem</div>
-      <h1>Wave 3 P2 Testing Tracker</h1>
+      <h1>Wave 3 Release 1 - P2 Conversion Tracker</h1>
       <div class="sub">Source to Pay · Acquire to Retire · Plan to Report</div>
     </div>
     <div class="asof-block">
       <div class="asof-label">Last updated</div>
       <div class="asof-date" id="lastUpdatedStamp"></div>
+      <div class="pull-cadence">Jira refresh window: daily ~8:00–9:00 AM EST</div>
     </div>
   </div>
 </div>
@@ -589,7 +647,7 @@
   <!-- EXECUTIVE SUMMARY -->
   <div class="exec-summary">
     <div class="exec-summary-head">
-      <h2>Executive Summary</h2>
+      <h2>Data Conversion Executive Summary · Release 1 - P2</h2>
     </div>
     <div class="exec-summary-grid">
       <div class="exec-col">
@@ -611,15 +669,15 @@
     </div>
   </div>
 
-  <div class="phase-tabs" role="tablist" aria-label="P2 program area">
+  <div class="phase-tabs" role="tablist" aria-label="Release 1 - P2 program area">
     <button class="phase-tab active" data-toplevel="conversion" role="tab" aria-selected="true">Data Conversion</button>
-    <button class="phase-tab" data-toplevel="prep" role="tab" aria-selected="false">P2 Prep</button>
+    <button class="phase-tab" data-toplevel="prep" role="tab" aria-selected="false">Release 1 - P2 Prep</button>
   </div>
 
   <!-- P2 PREP — placeholder until Matias's prep item list & dates are finalized -->
   <div id="prepPlaceholder" class="prep-placeholder" style="display:none;">
     <div class="prep-placeholder-icon">🗓️</div>
-    <h3>P2 Prep tracking coming soon!</h3>
+    <h3>Release 1 - P2 Prep tracking coming soon!</h3>
   </div>
 
   <div id="dataConversionView">
@@ -627,10 +685,16 @@
   <!-- KPI SUMMARY -->
   <div class="kpi-row" id="kpiRow"></div>
 
-  <!-- RISKS & BLOCKERS ROLLUP -->
-  <div class="risk-panel">
-    <div class="risk-panel-head">⚠ Risks &amp; Blockers <span class="n" id="riskCount">0</span></div>
-    <div class="risk-list" id="riskList"></div>
+  <!-- RULE-BASED RISKS & BLOCKERS -->
+  <div class="risk-stack">
+    <div class="risk-panel risk-only">
+      <div class="risk-panel-head">⚠ Risks · Past Due <span class="n" id="riskCount">0</span></div>
+      <div class="risk-list" id="riskList"></div>
+    </div>
+    <div class="risk-panel">
+      <div class="risk-panel-head">■ Blockers · Jira Status = Blocked <span class="n" id="blockerCount">0</span></div>
+      <div class="risk-list" id="blockerList"></div>
+    </div>
   </div>
 
   <!-- SUBLEDGER MANIFEST OVERVIEW -->
@@ -646,6 +710,7 @@
       <button class="chip" data-filter-type="subledger" data-value="PA">PA</button>
       <button class="chip" data-filter-type="subledger" data-value="PO">PO</button>
       <button class="chip" data-filter-type="subledger" data-value="CM">CM</button>
+      <button class="chip" data-filter-type="subledger" data-value="INV">Inventory</button>
     </div>
     <div class="filter-group">
       <span class="fg-label">Status</span>
@@ -665,18 +730,64 @@
   <!-- LEGEND -->
   <div class="legend-strip">
     <span><span class="legend-dot" style="background:var(--stage-done);"></span>Completed</span>
-    <span><span class="legend-dot" style="background:var(--stage-ontrack);"></span>On track</span>
+    <span><span class="legend-dot" style="background:var(--stage-ontrack);"></span>In progress / on track</span>
     <span><span class="legend-dot" style="background:var(--stage-atrisk);"></span>At risk</span>
-    <span><span class="legend-dot" style="background:var(--c-blocked);"></span>Past planned date</span>
+    <span><span class="legend-dot" style="background:var(--c-blocked);"></span>Past due only</span>
     <span><span class="legend-dot" style="background:var(--cream-200);border:1px solid var(--line);"></span>Not started</span>
     <span class="legend-sep">|</span>
     <span class="legend-stages">Stages: EXT Extract · PRF Profile · VAL Validate prof · FBD FBDI files · APR Approve · LOD Load · RCN Recon report · SGN Sign-off</span>
   </div>
 
+  <details class="data-guide" open>
+    <summary>How to read this dashboard / About this data</summary>
+    <div class="data-guide-grid">
+      <p><strong>Conversion objects and subtasks:</strong> Jira Conversion Execution subtasks for Release 1 - P2. Withdrawn objects are excluded. The Executive Summary uses Data Conversion records only; Release 1 - P2 Prep never contributes to these metrics.</p>
+      <p><strong>Defects:</strong> all open Jira defects labeled <code>conversion</code>, including functional-team defects. On Hold defects remain in the open count and are labeled On Hold; they are not blockers.</p>
+      <p><strong>Risk:</strong> any past-due conversion subtask or open defect. Recon-related work is excluded from Risks and Blockers because it does not gate downstream activity.</p>
+      <p><strong>Blocker:</strong> only an item whose Jira status is exactly <code>Blocked</code>. The dashboard does not infer blockers, and <code>On Hold</code> never counts as Blocked.</p>
+      <p><strong>Key blocker / issue:</strong> an overdue Extract-through-Load subtask with a Jira predecessor link to downstream work. No such links are present in this snapshot, so the section shows a readiness note instead of inferred results.</p>
+      <p><strong>% of Subtasks Complete:</strong> completed conversion subtasks ÷ all in-scope conversion subtasks. It is not an average of object statuses.</p>
+      <p><strong>Dates and freshness:</strong> defect Target Retest comes directly from Jira Due Date. Dates are being refreshed by the team. The timestamp above records the latest Jira refresh.</p>
+      <p><strong>System of record:</strong> Jira remains authoritative. This is a read-only daily snapshot; records cannot be edited in the dashboard.</p>
+    </div>
+    <p class="scope-note"><strong>Out of scope:</strong> Jira Action Items are not included. This dashboard contains only Conversion Execution subtasks and open defects labeled <code>conversion</code>.</p>
+  </details>
+
   <!-- DEFECTS REQUIRING RETEST -->
   <div class="section-heading">
-    <h2>Overdue Defects</h2>
-    <span class="section-sub">Open defects past their target retest date, ordered by severity</span>
+    <h2>Open Conversion Defects</h2>
+    <span class="section-sub">All open Jira defects labeled “conversion” · Target Retest reflects Jira Due Date and is currently being refreshed by the team</span>
+  </div>
+  <div class="filter-bar" id="defectFilterBar">
+    <div class="filter-group">
+      <span class="fg-label">Module</span>
+      <button class="chip active" data-filter-type="defect-module" data-value="all">All</button>
+      <button class="chip" data-filter-type="defect-module" data-value="AP">AP</button>
+      <button class="chip" data-filter-type="defect-module" data-value="FA">FA</button>
+      <button class="chip" data-filter-type="defect-module" data-value="PA">PA</button>
+      <button class="chip" data-filter-type="defect-module" data-value="PO">PO</button>
+      <button class="chip" data-filter-type="defect-module" data-value="CM">CM</button>
+      <button class="chip" data-filter-type="defect-module" data-value="INV">Inventory</button>
+    </div>
+    <div class="filter-group">
+      <span class="fg-label">Status</span>
+      <button class="chip active" data-filter-type="defect-status" data-value="all">All</button>
+      <button class="chip" data-filter-type="defect-status" data-value="Not Started">Not Started</button>
+      <button class="chip" data-filter-type="defect-status" data-value="In Progress">In Progress</button>
+      <button class="chip" data-filter-type="defect-status" data-value="Ready for Retest">Ready for Retest</button>
+      <button class="chip" data-filter-type="defect-status" data-value="Retest">Retest</button>
+      <button class="chip" data-filter-type="defect-status" data-value="On Hold">On Hold</button>
+      <button class="chip" data-filter-type="defect-status" data-value="Blocked">Blocked</button>
+    </div>
+    <div class="filter-group">
+      <span class="fg-label">Severity</span>
+      <button class="chip active" data-filter-type="defect-severity" data-value="all">All</button>
+      <button class="chip" data-filter-type="defect-severity" data-value="Critical">Critical</button>
+      <button class="chip" data-filter-type="defect-severity" data-value="High">High</button>
+      <button class="chip" data-filter-type="defect-severity" data-value="Medium">Medium</button>
+      <button class="chip" data-filter-type="defect-severity" data-value="Low">Low</button>
+    </div>
+    <input type="text" class="search-input" id="defectSearchInput" placeholder="Search defect, owner, or Jira key…">
   </div>
   <div class="table-wrap defects-wrap">
     <table>
@@ -699,7 +810,7 @@
 
   </div> <!-- /#dataConversionView -->
 
-  <footer>Not connected to live Jira data</footer>
+  <footer>Read-only Jira snapshot · Jira is the system of record · Action Items are not included</footer>
 </div>
 
 <script>
@@ -713,7 +824,7 @@
 
      key            -> Jira issue key
      object         -> conversion object / summary
-     subledger      -> "AP" | "FA" | "PA"
+     subledger      -> "AP" | "FA" | "PA" | "PO" | "CM" | "INV"
      phase          -> "Preparation" | "Execution"
      status         -> "Not Started" | "In Progress" | "Blocked" | "Complete"
      owner          -> assignee
@@ -721,10 +832,10 @@
      dueDate        -> YYYY-MM-DD
      priority       -> "High" | "Medium" | "Low"
      blocker        -> free text note, empty string if none
-     checklist      -> array of { label, done }. % complete is DERIVED from
-                       this (done / total) — do not set a % by hand. Add,
-                       remove, or check off items here; e.g. these could map
-                       to Jira sub-tasks or a checklist custom field.
+     checklist      -> array of { label, done, dueDate, status,
+                       predecessorFor }. % complete is DERIVED from done /
+                       total. status maps the Jira status when supplied;
+                       predecessorFor contains downstream Jira issue keys.
    ========================================================================= */
 const CONVERSION_DATA = [
   // ---- AP: Accounts Payable ----
@@ -780,7 +891,7 @@ const CONVERSION_DATA = [
   // =========================================================================
   { key:"FCE-CNV-P590-AP-INV-0358", object:"Open AP Invoices", subledger:"AP", phase:"Execution", status:"Not Started", owner:"Chanmye Myintthu", environment:"P590", dueDate:"2026-10-28", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-10-06"},{label:"Profile Data",done:false,dueDate:"2026-10-06"},{label:"Validate Profiling Report",done:false,dueDate:"2026-10-09"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-10-12"},{label:"Approve to Load",done:false,dueDate:"2026-10-13"},{label:"Load Data",done:false,dueDate:"2026-10-20"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-21"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-28"}] },
-  { key:"FCE-CNV-P590-AP-SUP-0352", object:"Supplier", subledger:"PO", phase:"Execution", status:"In Progress", owner:"Chanmye Myintthu", environment:"P590", dueDate:"2026-09-15", priority:"Medium", blocker:"",
+  { key:"FCE-CNV-P590-AP-SUP-0352", object:"Supplier", subledger:"AP", phase:"Execution", status:"In Progress", owner:"Chanmye Myintthu", environment:"P590", dueDate:"2026-09-15", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:false,dueDate:"2026-08-26"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-08-27"},{label:"Approve to Load",done:false,dueDate:"2026-08-28"},{label:"Load Data",done:false,dueDate:"2026-09-04"},{label:"Generate Recon Report",done:false,dueDate:"2026-09-08"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-15"}] },
 
   { key:"FCE-CNV-P590-FA-ASSET-0355", object:"Fixed Assets", subledger:"FA", phase:"Execution", status:"In Progress", owner:"Brandon Leslie", environment:"P590", dueDate:"2026-09-16", priority:"Medium", blocker:"",
@@ -810,7 +921,7 @@ const CONVERSION_DATA = [
   { key:"FCE-CNV-P590-PO-RECP--0357", object:"Open PO Receipts", subledger:"PO", phase:"Execution", status:"Not Started", owner:"Chanmye Myintthu", environment:"P590", dueDate:"2026-10-12", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:false,dueDate:"2026-09-22"},{label:"Profile Data",done:false,dueDate:"2026-09-22"},{label:"Validate Profiling Report",done:false,dueDate:"2026-09-25"},{label:"Generate Load Files (FBDI)",done:false,dueDate:"2026-09-28"},{label:"Approve to Load",done:false,dueDate:"2026-09-29"},{label:"Load Data",done:false,dueDate:"2026-10-02"},{label:"Generate Recon Report",done:false,dueDate:"2026-10-05"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-10-12"}] },
 
-  { key:"FCE-CNV-P590-INV-ITEM-0354", object:"Item Master", subledger:"PO", phase:"Execution", status:"In Progress", owner:"Alice Linesch", environment:"P590", dueDate:"2026-09-04", priority:"Medium", blocker:"",
+  { key:"FCE-CNV-P590-INV-ITEM-0354", object:"Item Master", subledger:"INV", phase:"Execution", status:"In Progress", owner:"Alice Linesch", environment:"P590", dueDate:"2026-09-04", priority:"Medium", blocker:"",
     checklist:[{label:"Extract Data",done:true,dueDate:"2026-08-17"},{label:"Profile Data",done:true,dueDate:"2026-08-19"},{label:"Validate Profiling Report",done:true,dueDate:"2026-08-21"},{label:"Generate Load Files (FBDI)",done:true,dueDate:"2026-08-24"},{label:"Approve to Load",done:true,dueDate:"2026-08-25"},{label:"Load Data",done:true,dueDate:"2026-08-27"},{label:"Generate Recon Report",done:true,dueDate:"2026-08-28"},{label:"Perform Post Load Validation & Provide Sign-Off",done:false,dueDate:"2026-09-04"}] },
 
   { key:"FCE-CNV-P590-CM-BANK-0353", object:"Internal Banks, Branches and Accounts", subledger:"CM", phase:"Execution", status:"In Progress", owner:"Brandon Leslie", environment:"P590", dueDate:"2026-09-08", priority:"Medium", blocker:"",
@@ -825,16 +936,19 @@ const CONVERSION_DATA = [
    export. Field names:
 
      key              -> Jira issue key
+     issueType        -> Jira Issue Type ("Defect"; Action Items are excluded)
+     labels           -> Jira Labels (must include "conversion")
      summary          -> defect title (verbatim from Jira)
-     subledger        -> "AP" | "FA" | "PA" | "PO" | "CM" (mapped from Jira's
-                          Module field; "Inventory" is folded into PO)
+     subledger        -> "AP" | "FA" | "PA" | "PO" | "CM" | "INV" (normalized
+                          to the ERP module boundaries used by Jira)
      relatedObject    -> best-guess object name parsed from the summary's
                           leading phrase — not a clean Jira field, so double-
                           check before quoting it verbatim to leadership
      severity         -> "Critical" | "High" | "Medium" | "Low" | "Not Set"
                           (from Jira Priority; "No priority" -> "Not Set")
      status           -> Jira's actual status: "Not Started" | "In Progress" |
-                          "Ready for Retest" | "On Hold" | "Fail" | "Resolved"
+                          "Ready for Retest" | "Retest" | "On Hold" | "Blocked" |
+                          "Fail" | "Resolved"
      owner            -> assignee
      dateIdentified    -> YYYY-MM-DD (from Created)
      targetRetestDate  -> YYYY-MM-DD (from Due Date); blank if Jira had none
@@ -901,10 +1015,28 @@ const DEFECT_DATA = [
   { key:"CONAMER1001932-18578", summary:"Reconciliation report is not present", subledger:"PO", relatedObject:"Reconciliation report is not present", severity:"Medium", status:"In Progress", owner:"Alice Linesch", dateIdentified:"2026-03-18", targetRetestDate:"2026-11-04", notes:"N/A" },
 ];
 
+// Normalize display modules to the ERP boundaries agreed with the client.
+// This also makes future Jira exports safe if legacy records still carry a
+// broad Purchasing tag. Specific boundaries take precedence over the raw tag.
+function normalizedModule(item){
+  const text = `${item.object||""} ${item.summary||""} ${item.relatedObject||""}`.toLowerCase();
+  if(/\bbank|cash management/.test(text)) return "CM";
+  if(/\bitem master|\binventory\b/.test(text)) return "INV";
+  if(/\bsupplier|\bap invoice|\bpayable|\binvoice\b/.test(text)) return "AP";
+  if(/\bpurchase order|\bpo receipt|\breceipt\b|\bpurchasing\b/.test(text)) return "PO";
+  return item.subledger;
+}
+CONVERSION_DATA.forEach(item => { item.subledger = normalizedModule(item); });
+DEFECT_DATA.forEach(item => { item.subledger = normalizedModule(item); });
+
+function stepIsDone(step){
+  return step.done===true || ["Completed","Resolved","Done","Closed"].includes(step.status);
+}
+
 // Derive % complete from checklist so it's never hand-typed.
 function pctComplete(row){
   if(!row.checklist || row.checklist.length===0) return 0;
-  const done = row.checklist.filter(c=>c.done).length;
+  const done = row.checklist.filter(stepIsDone).length;
   return Math.round((done/row.checklist.length)*100);
 }
 
@@ -926,7 +1058,14 @@ function daysUntil(dateStr){
   return Math.round((d - TODAY) / (1000*60*60*24));
 }
 
-const SUBLEDGER_LABEL = { AP:"Accounts Payable", FA:"Fixed Assets", PA:"Project Accounting", PO:"Purchasing", CM:"Cash Management" };
+const SUBLEDGER_LABEL = {
+  AP:"Accounts Payable",
+  FA:"Fixed Assets",
+  PA:"Project Accounting",
+  PO:"Purchasing",
+  CM:"Cash Management",
+  INV:"Inventory"
+};
 const STATUS_CLASS = {
   "Complete":"s-complete",
   "In Progress":"s-progress",
@@ -935,7 +1074,7 @@ const STATUS_CLASS = {
 };
 const SEVERITY_CLASS = {
   "Critical":"s-blocked",
-  "High":"s-progress",
+  "High":"s-high",
   "Medium":"s-notstarted",
   "Low":"s-notstarted",
   "Not Set":"s-notstarted"
@@ -945,22 +1084,36 @@ const DEFECT_STATUS_CLASS = {
   "In Progress":"s-progress",
   "Ready for Retest":"s-progress",
   "Retest":"s-progress",
-  "On Hold":"s-blocked",
+  "On Hold":"s-notstarted",
+  "Blocked":"s-jira-blocked",
   "Fail":"s-blocked",
   "Resolved":"s-complete"
 };
-const DEFECT_CLOSED_STATUSES = ["Resolved"];
+const DEFECT_CLOSED_STATUSES = ["Resolved","Withdrawn","Closed","Done","Completed"];
 
-// Resolved defects are excluded entirely (not just muted) — if a future
-// export includes Resolved items again, this filter drops them automatically.
-const OPEN_DEFECT_DATA = DEFECT_DATA.filter(d => !DEFECT_CLOSED_STATUSES.includes(d.status));
+function hasConversionLabel(defect){
+  if(defect.labels===undefined) return true; // current export is pre-filtered
+  const labels = Array.isArray(defect.labels) ? defect.labels : String(defect.labels).split(",");
+  return labels.some(label=>label.trim().toLowerCase()==="conversion");
+}
+
+// No Release 1 label is required: functional-team defects remain in scope.
+// Explicit issue type support prevents Action Items entering future extracts.
+const OPEN_DEFECT_DATA = DEFECT_DATA.filter(d =>
+  !DEFECT_CLOSED_STATUSES.includes(d.status) &&
+  (!d.issueType || d.issueType==="Defect") &&
+  hasConversionLabel(d)
+);
 
 // Conversion Preparation tab is hidden for now (data stays in CONVERSION_DATA
 // above, untouched, so it's a one-line change to bring it back later — just
 // remove this filter and re-add the Preparation tab button in the HTML).
-const ACTIVE_DATA = CONVERSION_DATA.filter(r => r.phase !== "Preparation");
+const ACTIVE_DATA = CONVERSION_DATA.filter(r =>
+  r.phase === "Execution" && !["Withdrawn","Cancelled"].includes(r.status)
+);
 
 let state = { phase:"all", subledgers:new Set(), statuses:new Set(), search:"" };
+let defectState = { modules:new Set(), statuses:new Set(), severities:new Set(), search:"" };
 
 function filteredData(){
   return ACTIVE_DATA.filter(r=>{
@@ -981,19 +1134,20 @@ function renderKPIs(){
   const complete = rows.filter(r=>r.status==="Complete").length;
   const blocked = rows.filter(r=>r.status==="Blocked").length;
   const totalSteps = rows.reduce((a,r)=>a+r.checklist.length,0);
-  const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+  const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(stepIsDone).length,0);
   const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
   const overdue = rows.filter(r=>{
-    const cur = currentSubtask(r);
-    return cur && cur.days<0;
+    return (r.checklist||[]).some(step =>
+      !stepIsDone(step) && !isReconRelated(step.label) && daysUntil(step.dueDate)<0
+    );
   }).length;
 
   const cards = [
     { label:"Conversion Objects in Scope", value:total, foot: "In scope", cls:"" },
-    { label:"Completion", value:pct+"%", foot:doneSteps+" of "+totalSteps+" sub-tasks done", cls:"" },
-    { label:"Objects Blocked", value:blocked, foot:"Need escalation", cls: blocked>0 ? "blocked" : "" },
+    { label:"% of Subtasks Complete", value:pct+"%", foot:doneSteps+" of "+totalSteps+" subtasks done", cls:"" },
     { label:"Objects Complete", value:complete+" <small>/ "+total+"</small>", foot:"Fully converted & validated", cls:"" },
-    { label:"Overdue Items", value:overdue, foot:"Objects with a sub-task past planned date", cls: overdue>0 ? "overdue" : "" },
+    { label:"Objects Blocked", value:blocked, foot:"Jira status is Blocked", cls: blocked>0 ? "blocked" : "" },
+    { label:"Objects with Overdue Work", value:overdue, foot:"Excludes recon-related subtasks", cls: overdue>0 ? "overdue" : "" },
   ];
 
   document.getElementById("kpiRow").innerHTML = cards.map(c=>`
@@ -1007,13 +1161,13 @@ function renderKPIs(){
 
 function renderManifests(){
   const scope = state.phase==="all" ? ACTIVE_DATA : ACTIVE_DATA.filter(r=>r.phase===state.phase);
-  const subledgers = ["CM","PO","PA","AP","FA"];
+  const subledgers = ["CM","PO","INV","PA","AP","FA"];
 
   document.getElementById("manifestRow").innerHTML = subledgers.map(sl=>{
     const rows = scope.filter(r=>r.subledger===sl);
     const total = rows.length;
     const totalSteps = rows.reduce((a,r)=>a+r.checklist.length,0);
-    const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+    const doneSteps = rows.reduce((a,r)=>a+r.checklist.filter(stepIsDone).length,0);
     const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
     const byStatus = ["Not Started","In Progress","Blocked","Complete"].map(st=>({
       st, n: rows.filter(r=>r.status===st).length
@@ -1023,7 +1177,7 @@ function renderManifests(){
       <div class="manifest">
         <div class="manifest-head">
           <span class="tag">${sl} — ${SUBLEDGER_LABEL[sl]}</span>
-          <span class="route">P2 · ORACLE CLOUD</span>
+          <span class="route">R1 - P2 · ORACLE CLOUD</span>
         </div>
         <div class="manifest-body">
           <div class="count-line"><span>Objects in scope</span><b>${total}</b></div>
@@ -1038,7 +1192,7 @@ function renderManifests(){
   }).join("");
 }
 
-const WORKSTREAM_MAP = { AP:"Source to Pay", PO:"Source to Pay", CM:"Source to Pay", FA:"Acquire to Retire", PA:"Plan to Report" };
+const WORKSTREAM_MAP = { AP:"Source to Pay", PO:"Source to Pay", CM:"Source to Pay", INV:"Source to Pay", FA:"Acquire to Retire", PA:"Plan to Report" };
 const WORKSTREAM_ORDER = ["Source to Pay","Acquire to Retire","Plan to Report"];
 const STAGE_ABBR = [
   {code:"EXT", label:"Extract Data"},
@@ -1051,6 +1205,17 @@ const STAGE_ABBR = [
   {code:"SGN", label:"Perform Post Load Validation & Provide Sign-Off"},
 ];
 const STAGE_ABBR_FULL = { EXT:"Extract", PRF:"Profile", VAL:"Validate", FBD:"FBDI", APR:"Approve", LOD:"Load", RCN:"Recon", SGN:"Sign-off" };
+
+function stageMeta(step, idx){
+  const label = (step.label||"").toLowerCase();
+  if(label.includes("rest api")) return { code:"API", short:"REST API" };
+  if(label.includes("bank") && label.includes("load")) return { code:"BNK", short:"Bank load" };
+  if(label.includes("fbdi")) return { code:"FBD", short:"FBDI" };
+  return {
+    code: STAGE_ABBR[idx]?.code || `S${idx+1}`,
+    short: STAGE_ABBR_FULL[STAGE_ABBR[idx]?.code] || step.label
+  };
+}
 
 function formatDateShort(iso){
   if(!iso) return "";
@@ -1065,14 +1230,17 @@ function formatDateShort(iso){
 // yet).
 function stageState(obj, idx, nextIdx){
   const step = obj.checklist[idx];
-  if(step.done) return "done";
-  if(nextIdx===-1 || idx>nextIdx) return "pending";
+  if(stepIsDone(step)) return "done";
+  if(step.status==="Blocked" || (!step.status && idx===nextIdx && obj.status==="Blocked")) return "blocker";
   const days = daysUntil(step.dueDate);
-  if(days<0 || obj.status==="Blocked") return "overdue";
-  if(obj.status==="In Progress"){
+  if(days<0) return "overdue";
+  const isInProgress = step.status==="In Progress" ||
+    (!step.status && idx===nextIdx && obj.status==="In Progress");
+  if(isInProgress){
     if(days<=AT_RISK_SOON_DAYS) return "atrisk";
     return "current";
   }
+  if(idx===nextIdx && days<=AT_RISK_SOON_DAYS) return "atrisk";
   return "pending";
 }
 
@@ -1093,26 +1261,26 @@ function renderObjectGroups(){
     if(wsRows.length===0) return "";
 
     const totalSteps = wsRows.reduce((a,r)=>a+r.checklist.length,0);
-    const doneSteps = wsRows.reduce((a,r)=>a+r.checklist.filter(c=>c.done).length,0);
+    const doneSteps = wsRows.reduce((a,r)=>a+r.checklist.filter(stepIsDone).length,0);
     const pct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
 
     const objRows = wsRows.map(r=>{
-      const nextIdx = r.checklist.findIndex(c=>!c.done);
-      const done = r.checklist.filter(c=>c.done).length;
+      const nextIdx = r.checklist.findIndex(c=>!stepIsDone(c));
+      const done = r.checklist.filter(stepIsDone).length;
       const dates = r.checklist.map(c=>c.dueDate).filter(Boolean).sort();
       const dateRange = dates.length ? `${formatDateShort(dates[0])} – ${formatDateShort(dates[dates.length-1])}` : "";
 
       const stagePills = r.checklist.map((c,idx)=>{
         const st = stageState(r, idx, nextIdx);
-        const code = STAGE_ABBR[idx] ? STAGE_ABBR[idx].code : "";
-        return `<span class="stage-pill stage-${st}" title="${c.label}">${code}</span>`;
+        const meta = stageMeta(c, idx);
+        return `<span class="stage-pill stage-${st}" title="${c.label} · ${c.status||"status inherited from object"}">${meta.code}</span>`;
       }).join("");
 
       let nextLabel = "Complete", nextClass = "next-done";
       if(nextIdx !== -1){
         const st = stageState(r, nextIdx, nextIdx);
         nextClass = `next-${st}`;
-        nextLabel = STAGE_ABBR_FULL[STAGE_ABBR[nextIdx].code] || STAGE_ABBR[nextIdx].code;
+        nextLabel = stageMeta(r.checklist[nextIdx], nextIdx).short;
       }
 
       return `
@@ -1143,23 +1311,35 @@ function renderObjectGroups(){
 // The "current" sub-task for an object: its first incomplete checklist step.
 // Returns null if every step is done.
 function currentSubtask(obj){
-  const idx = obj.checklist.findIndex(c=>!c.done);
+  const idx = obj.checklist.findIndex(c=>!stepIsDone(c));
   if(idx===-1) return null;
   const step = obj.checklist[idx];
   return { idx, step, days: daysUntil(step.dueDate) };
 }
 
-// Risks & Blockers: any Blocked conversion object, any object whose CURRENT
-// sub-task is past its planned date, plus any Critical/High-severity defect
-// that isn't yet Resolved.
-function objectRiskRows(){
+function isReconRelated(label){
+  return /\brecon(ciliation)?\b/i.test(label||"");
+}
+
+// Risk and Blocker are deliberately separate, field-driven classifications.
+// Risk = past due. Blocker = Jira status exactly "Blocked". Recon is excluded.
+function conversionRiskRows(){
   const scope = state.phase==="all" ? ACTIVE_DATA : ACTIVE_DATA.filter(r=>r.phase===state.phase);
-  return scope.filter(r=>{
-    if(r.status==="Blocked") return true;
-    const cur = currentSubtask(r);
-    if(cur && cur.days<0) return true; // current sub-task is overdue
-    return false;
-  });
+  return scope.flatMap(r => (r.checklist||[])
+    .filter(step =>
+      !stepIsDone(step) &&
+      step.status!=="Blocked" &&
+      r.status!=="Blocked" &&
+      !isReconRelated(step.label) &&
+      daysUntil(step.dueDate)<0
+    )
+    .map(step=>({
+      type:"subtask", tag:"SUBTASK", key:r.key, subledger:r.subledger,
+      label:`${r.object} — ${step.label}`, dueDate:step.dueDate,
+      statusLabel:"Past due", statusClass:"s-blocked",
+      sortDays:daysUntil(step.dueDate)
+    }))
+  );
 }
 
 // "At risk" — current sub-task not yet overdue, but due within this many
@@ -1171,67 +1351,104 @@ function atRiskObjectRows(){
     if(r.status==="Blocked" || r.status==="Complete") return false;
     const cur = currentSubtask(r);
     if(!cur) return false;
+    if(isReconRelated(cur.step.label)) return false;
     return cur.days>=0 && cur.days<=AT_RISK_SOON_DAYS;
   });
 }
 
 function defectRiskRows(){
-  return OPEN_DEFECT_DATA.filter(d => d.severity==="Critical" || d.severity==="High");
+  return OPEN_DEFECT_DATA
+    .filter(d =>
+      d.status!=="Blocked" &&
+      !isReconRelated(`${d.summary} ${d.relatedObject}`) &&
+      daysUntil(d.targetRetestDate)<0
+    )
+    .map(d=>({
+      type:"defect", tag:"DEFECT", key:d.key, subledger:d.subledger,
+      label:d.summary, dueDate:d.targetRetestDate,
+      statusLabel:`${d.severity} · Past due`, statusClass:"s-blocked",
+      sortDays:daysUntil(d.targetRetestDate)
+    }));
 }
 
-function renderRisks(){
-  // Criticality rank: 0 = Blocked / overdue-current-subtask objects and
-  // Critical defects, 1 = High defects.
-  const objectRisks = objectRiskRows().map(r=>{
-    const cur = currentSubtask(r);
-    const isBlocked = r.status==="Blocked";
-    return {
-      type:"object", tag: isBlocked ? "BLOCKED" : "SUBTASK",
-      key:r.key, subledger:r.subledger,
-      label: cur ? `${r.object} — ${cur.step.label}` : r.object,
-      dueDate: cur ? cur.step.dueDate : r.dueDate,
-      statusLabel: isBlocked ? "Blocked" : "Past planned date",
-      statusClass: isBlocked ? STATUS_CLASS["Blocked"] : "s-blocked",
-      sortDays: cur ? cur.days : daysUntil(r.dueDate),
-      rank: 0
-    };
+function blockerRows(){
+  const rows = [];
+  ACTIVE_DATA.forEach(r=>{
+    if(isReconRelated(r.object)) return;
+    if(r.status==="Blocked"){
+      const current = currentSubtask(r);
+      if(current && isReconRelated(current.step.label)) return;
+      rows.push({
+        key:r.key, subledger:r.subledger, label:r.object, dueDate:r.dueDate,
+        statusLabel:"Blocked", statusClass:"s-jira-blocked"
+      });
+      return;
+    }
+    (r.checklist||[]).forEach(step=>{
+      if(step.status==="Blocked" && !isReconRelated(step.label)){
+        rows.push({
+          key:r.key, subledger:r.subledger, label:`${r.object} — ${step.label}`,
+          dueDate:step.dueDate, statusLabel:"Blocked", statusClass:"s-jira-blocked"
+        });
+      }
+    });
   });
+  OPEN_DEFECT_DATA
+    .filter(d=>d.status==="Blocked" && !isReconRelated(`${d.summary} ${d.relatedObject}`))
+    .forEach(d=>rows.push({
+      key:d.key, subledger:d.subledger, label:d.summary,
+      dueDate:d.targetRetestDate, statusLabel:"Blocked", statusClass:"s-jira-blocked"
+    }));
+  return rows;
+}
 
-  const defectRisks = defectRiskRows().map(d=>({
-    type:"defect", tag:"DEFECT", key:d.key, subledger:d.subledger, label:d.summary,
-    dueDate: d.targetRetestDate,
-    statusLabel:`${d.severity} · ${d.status}`, statusClass:SEVERITY_CLASS[d.severity],
-    sortDays: daysUntil(d.targetRetestDate),
-    rank: d.severity==="Critical" ? 0 : 1
-  }));
-
-  const rows = [...objectRisks, ...defectRisks].sort((a,b)=> a.rank-b.rank || a.sortDays-b.sortDays);
-
-  document.getElementById("riskCount").textContent = rows.length;
-  const list = document.getElementById("riskList");
-
-  if(rows.length===0){
-    list.innerHTML = `<div class="risk-empty">No blocked objects, overdue sub-tasks, or critical/high defects in the current view.</div>`;
-    return;
-  }
-
-  list.innerHTML = rows.map(r=>`
+function renderRiskList(elementId, rows, emptyMessage){
+  const list = document.getElementById(elementId);
+  list.innerHTML = rows.length ? rows.map(r=>`
     <div class="risk-item">
       <span class="key-cell">${r.key}</span>
       <span class="sl-pill">${r.subledger}</span>
-      <span class="defect-tag"><span class="status-pill s-blocked" style="font-size:10px;">${r.tag}</span></span>
       <span class="obj">${r.label}</span>
       <span class="due">${r.dueDate ? formatDateShort(r.dueDate) : "—"}</span>
       <span class="status-pill ${r.statusClass}">${r.statusLabel}</span>
     </div>
-  `).join("");
+  `).join("") : `<div class="risk-empty">${emptyMessage}</div>`;
+}
+
+function renderRisks(){
+  const risks = [...conversionRiskRows(), ...defectRiskRows()]
+    .sort((a,b)=>a.sortDays-b.sortDays);
+  const blockers = blockerRows();
+  document.getElementById("riskCount").textContent = risks.length;
+  document.getElementById("blockerCount").textContent = blockers.length;
+  renderRiskList("riskList", risks, "No past-due non-recon subtasks or defects.");
+  renderRiskList("blockerList", blockers, "No non-recon items have Jira status Blocked.");
+}
+
+function filteredDefects(){
+  return OPEN_DEFECT_DATA.filter(d=>{
+    if(defectState.modules.size>0 && !defectState.modules.has(d.subledger)) return false;
+    if(defectState.statuses.size>0 && !defectState.statuses.has(d.status)) return false;
+    if(defectState.severities.size>0 && !defectState.severities.has(d.severity)) return false;
+    if(defectState.search){
+      const s = defectState.search.toLowerCase();
+      const hay = `${d.key} ${d.summary} ${d.relatedObject||""} ${d.owner||""}`.toLowerCase();
+      if(!hay.includes(s)) return false;
+    }
+    return true;
+  });
 }
 
 function renderDefectTable(){
   const sevRank = { Critical:0, High:1, Medium:2, Low:3, "Not Set":4 };
-  const rows = OPEN_DEFECT_DATA
-    .filter(d => daysUntil(d.targetRetestDate) < 0)
-    .sort((a,b)=> (sevRank[a.severity]??9) - (sevRank[b.severity]??9) || daysUntil(a.targetRetestDate) - daysUntil(b.targetRetestDate));
+  const rows = filteredDefects()
+    .sort((a,b)=>{
+      const aOverdue = daysUntil(a.targetRetestDate)<0 ? 0 : 1;
+      const bOverdue = daysUntil(b.targetRetestDate)<0 ? 0 : 1;
+      return aOverdue-bOverdue ||
+        (sevRank[a.severity]??9) - (sevRank[b.severity]??9) ||
+        daysUntil(a.targetRetestDate) - daysUntil(b.targetRetestDate);
+    });
 
   document.getElementById("defectTableBody").innerHTML = rows.length ? rows.map(d=>`
     <tr>
@@ -1245,14 +1462,14 @@ function renderDefectTable(){
       <td class="mono">${d.targetRetestDate}</td>
       <td>${d.notes ? d.notes : "<span style='color:#B5AC9E;'>—</span>"}</td>
     </tr>
-  `).join("") : `<tr><td colspan="9" class="no-rows" style="display:table-cell;">No overdue defects right now.</td></tr>`;
+  `).join("") : `<tr><td colspan="9" class="no-rows" style="display:table-cell;">No conversion defects match the current filters.</td></tr>`;
 }
 
 function renderSummary(){
   const rows = ACTIVE_DATA; // Execution only (Preparation tab is hidden)
   const total = rows.length;
+  const completeObjects = rows.filter(r=>r.status==="Complete").length;
   const blocked = rows.filter(r=>r.status==="Blocked").length;
-  const avgPct = total ? Math.round(rows.reduce((a,r)=>a+pctComplete(r),0)/total) : 0;
 
   // Sub-task-level breakdown (not object-level) — "we're tracking by
   // sub-task." A sub-task counts as "in progress" only when it's the
@@ -1260,25 +1477,29 @@ function renderSummary(){
   // In Progress; everything else not-yet-done is "not started."
   let totalSteps = 0, doneSteps = 0, inProgressSteps = 0;
   rows.forEach(r=>{
-    const nextIdx = r.checklist.findIndex(c=>!c.done);
+    const nextIdx = r.checklist.findIndex(c=>!stepIsDone(c));
     r.checklist.forEach((c,idx)=>{
       totalSteps++;
-      if(c.done){ doneSteps++; return; }
-      if(idx===nextIdx && r.status==="In Progress") inProgressSteps++;
+      if(stepIsDone(c)){ doneSteps++; return; }
+      if(c.status==="In Progress" || (!c.status && idx===nextIdx && r.status==="In Progress")) inProgressSteps++;
     });
   });
   const notStartedSteps = totalSteps - doneSteps - inProgressSteps;
+  const completionPct = totalSteps ? Math.round(doneSteps/totalSteps*100) : 0;
 
   const openDefects = OPEN_DEFECT_DATA;
   const criticalDefects = openDefects.filter(d => d.severity==="Critical");
+  const onHoldDefects = openDefects.filter(d => d.status==="On Hold");
   const atRisk = atRiskObjectRows();
 
   document.getElementById("execStatusText").innerHTML =
-    `Conversion Execution is <strong>${avgPct}% complete</strong> across <strong>${totalSteps}</strong> sub-tasks in <strong>${total}</strong> active conversion objects — `
+    `<strong>${completionPct}% of subtasks complete</strong> (${doneSteps}/${totalSteps}); <strong>${completeObjects} of ${total} objects complete</strong>. `
+    + `Release 1 - P2 Conversion Execution has `
     + `${doneSteps} completed, ${inProgressSteps} in progress, ${notStartedSteps} not started`
     + `${blocked>0 ? `, and <strong>${blocked} blocked</strong> object${blocked===1?"":"s"}` : ""}. `
-    + `${openDefects.length} open defect${openDefects.length===1?"":"s"} remain across the program`
+    + `${openDefects.length} open conversion-labeled defect${openDefects.length===1?"":"s"} remain`
     + `${criticalDefects.length>0 ? `, including <strong>${criticalDefects.length} critical</strong>` : ""}. `
+    + `${onHoldDefects.length>0 ? `<strong>${onHoldDefects.length} On Hold</strong> defect${onHoldDefects.length===1?" is":"s are"} included in that open count but not treated as blocked. ` : ""}`
     + `${atRisk.length>0 ? `<strong>${atRisk.length}</strong> object${atRisk.length===1?"":"s"} ${atRisk.length===1?"has":"have"} a sub-task due within 24 hours — see At Risk.` : "Nothing currently in progress which is due in the next 24 hours."}`;
 
   // Upcoming: the next incomplete subtask (checklist step) for each active
@@ -1287,7 +1508,7 @@ function renderSummary(){
   const upcomingSteps = [];
   rows.forEach(r=>{
     if(r.status==="Complete") return;
-    const nextStep = (r.checklist||[]).find(c=>!c.done);
+    const nextStep = (r.checklist||[]).find(c=>!stepIsDone(c));
     if(!nextStep) return;
     const d = daysUntil(nextStep.dueDate);
     if(d>=9999) return;
@@ -1308,21 +1529,25 @@ function renderSummary(){
     return `<li><span class="sl-pill" style="margin-right:6px;">${r.subledger}</span>${r.object} — <em>${cur.step.label}</em> <span class="exec-meta at-risk">— ${when}</span></li>`;
   }).join("") : `<li class="exec-empty">Nothing currently in progress which is due in the next 24 hours.</li>`;
 
-  // Key blockers: blocked objects + objects with an overdue current sub-task
-  // + critical open defects
-  const blockedObjs = objectRiskRows().map(r=>{
-    const cur = currentSubtask(r);
-    const detail = r.status==="Blocked" ? (r.blocker || "Blocked") : `Sub-task overdue · ${cur.step.label}`;
-    return { label:r.object, subledger:r.subledger, detail };
-  });
-  const criticalItems = criticalDefects.map(d=>({
-    label:d.summary, subledger:d.subledger, detail:`Critical defect · ${d.status}`
-  }));
-  const blockerItems = [...blockedObjs, ...criticalItems];
+  // Key issues require an explicit Jira predecessor link. Only overdue
+  // Extract-through-Load stages qualify; Recon and later stages never do.
+  const keyDependencyItems = rows.flatMap(r=>(r.checklist||[])
+    .map((step,idx)=>({r,step,idx}))
+    .filter(({step,idx})=>{
+      const hasDependency = step.isPredecessor===true ||
+        (Array.isArray(step.predecessorFor) && step.predecessorFor.length>0) ||
+        (typeof step.predecessorFor==="string" && step.predecessorFor.trim());
+      return hasDependency && idx<=5 && !isReconRelated(step.label) &&
+        !stepIsDone(step) && daysUntil(step.dueDate)<0;
+    })
+  );
 
-  document.getElementById("execBlockersList").innerHTML = blockerItems.length
-    ? blockerItems.slice(0,6).map(b=>`<li><span class="sl-pill" style="margin-right:6px;">${b.subledger}</span>${b.label} <span class="exec-meta">— ${b.detail}</span></li>`).join("")
-    : `<li class="exec-empty">No blockers or critical defects right now.</li>`;
+  document.getElementById("execBlockersList").innerHTML = keyDependencyItems.length
+    ? keyDependencyItems.slice(0,6).map(({r,step})=>{
+        const targets = Array.isArray(step.predecessorFor) ? step.predecessorFor.join(", ") : step.predecessorFor;
+        return `<li><span class="sl-pill" style="margin-right:6px;">${r.subledger}</span>${r.object} — <em>${step.label}</em> <span class="exec-meta">— overdue dependency${targets ? ` for ${targets}` : ""}</span></li>`;
+      }).join("")
+    : `<li class="exec-empty">Dependency-based results are pending Jira predecessor links. No blockers are inferred manually.</li>`;
 }
 
 function renderAll(){
@@ -1348,7 +1573,7 @@ document.querySelectorAll('.phase-tab[data-toplevel]').forEach(btn=>{
   });
 });
 
-function wireMultiSelectChips(filterType, stateSet){
+function wireMultiSelectChips(filterType, stateSet, onChange){
   const chips = document.querySelectorAll(`.chip[data-filter-type="${filterType}"]`);
   const allChip = document.querySelector(`.chip[data-filter-type="${filterType}"][data-value="all"]`);
 
@@ -1374,17 +1599,24 @@ function wireMultiSelectChips(filterType, stateSet){
         else stateSet.add(btn.dataset.value);
       }
       syncActiveClasses();
-      renderObjectGroups();
+      onChange();
     });
   });
 }
 
-wireMultiSelectChips("subledger", state.subledgers);
-wireMultiSelectChips("status", state.statuses);
+wireMultiSelectChips("subledger", state.subledgers, renderObjectGroups);
+wireMultiSelectChips("status", state.statuses, renderObjectGroups);
+wireMultiSelectChips("defect-module", defectState.modules, renderDefectTable);
+wireMultiSelectChips("defect-status", defectState.statuses, renderDefectTable);
+wireMultiSelectChips("defect-severity", defectState.severities, renderDefectTable);
 
 document.getElementById("searchInput").addEventListener("input", (e)=>{
   state.search = e.target.value;
   renderObjectGroups();
+});
+document.getElementById("defectSearchInput").addEventListener("input", (e)=>{
+  defectState.search = e.target.value;
+  renderDefectTable();
 });
 
 renderAll();
