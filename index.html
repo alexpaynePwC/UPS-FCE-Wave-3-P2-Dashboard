@@ -163,6 +163,10 @@
     grid-template-columns:1fr 1fr 1fr 1fr;
     gap:20px;
   }
+  .exec-summary.rice-exec .exec-summary-grid{
+    grid-template-columns:1.15fr 1fr 1fr;
+  }
+  .exec-summary.rice-exec #execColBlockersWrap{display:none;}
   .exec-col-title{
     font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
     color:var(--brown-700);font-weight:700;margin-bottom:8px;
@@ -576,17 +580,36 @@
   .obj-next.next-overdue{color:var(--c-blocked);}
   .obj-next.next-blocker{color:var(--brown-800);}
   .obj-next.next-pending{color:var(--gray-500);}
-  .rice-v2-row{
+  .rice-v2-row,.rice-v2-head{
     display:grid;
-    grid-template-columns:minmax(240px,1.6fr) 135px 100px minmax(300px,2.4fr) 64px 38px;
+    grid-template-columns:minmax(220px,1.5fr) minmax(200px,0.95fr) minmax(230px,1.7fr) 78px 38px;
     align-items:center;
     gap:14px;
     padding:14px 16px;
     border-bottom:1px solid var(--cream-200);
   }
+  .rice-v2-head{
+    background:var(--brown-900);
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    padding:10px 16px;
+  }
+  .rice-v2-head .head-crs{text-align:right;}
   .rice-v2-row:hover{background:var(--cream-50);}
-  .rice-v2-row .stage-row{flex-wrap:wrap;}
-  .rice-v2-row .stage-pill{min-width:34px;cursor:help;}
+  .rice-v2-row .status-pill{
+    white-space:normal;
+    line-height:1.25;
+    max-width:100%;
+  }
+  .rice-v2-row .stage-row{
+    flex-wrap:nowrap;
+    min-width:0;
+  }
+  .rice-v2-row .stage-pill{min-width:36px;flex:0 0 auto;cursor:help;}
+  .rice-v2-crs.open-crs{color:var(--c-blocked);font-weight:700;}
   .rice-v2-detail{
     padding:14px 18px 18px;
     background:var(--cream-50);
@@ -602,6 +625,7 @@
     font-size:15px;
     color:var(--brown-900);
   }
+  .rice-v2-crlist + h3{margin-top:16px;}
   .rice-v2-sublist,.rice-v2-crlist{
     background:#fff;
     border:1px solid var(--line);
@@ -621,6 +645,7 @@
   .rice-v2-subitem:last-child,.rice-v2-critem:last-child{border-bottom:none;}
   @media (max-width:1000px){
     .rice-v2-row{grid-template-columns:1fr;gap:7px;}
+    .rice-v2-head{display:none;}
     .rice-v2-detail-grid{grid-template-columns:1fr;}
   }
   @media (max-width:1000px){
@@ -756,7 +781,7 @@
         <div class="exec-col-title" id="execColAtRisk">At Risk</div>
         <ul id="execAtRiskList"></ul>
       </div>
-      <div class="exec-col">
+      <div class="exec-col" id="execColBlockersWrap">
         <div class="exec-col-title" id="execColBlockers">Key Blockers &amp; Issues</div>
         <ul id="execBlockersList"></ul>
       </div>
@@ -767,7 +792,7 @@
     <button class="phase-tab active" data-toplevel="conversion" role="tab" aria-selected="true">Data Conversion</button>
     <button class="phase-tab" data-toplevel="p2prep" role="tab" aria-selected="false">P2 Prep</button>
     <button class="phase-tab" data-toplevel="rice" role="tab" aria-selected="false">P2 RICE Tracker</button>
-    <button class="phase-tab" data-toplevel="ricev2" role="tab" aria-selected="false">P2 RICE Tracker v2</button>
+    <button class="phase-tab" data-toplevel="ricev2" role="tab" aria-selected="false">P2 RICE Tracker (stages view)</button>
   </div>
 
   <!-- RELEASE 1 - P2 RICE TRACKER — snapshot from teammate RICE dashboard -->
@@ -872,8 +897,6 @@
   <!-- P2 RICE TRACKER V2 — conversion-style sub-task boxes and per-RICE detail -->
   <div id="riceTrackerV2View" style="display:none;">
     <div class="kpi-row kpi-3" id="riceV2KpiRow"></div>
-    <div class="kpi-row" id="riceV2MiniRow"></div>
-    <p class="scope-note">Sub-task boxes are consolidated into five stages. Each stage’s color comes from its <strong>current open Jira sub-task</strong> (the first one in that stage that is not Completed): delayed if that sub-task’s Planned Complete Date is before today, on track if it is still open and not past due. Expand a RICE item for the full sub-task list and associated change requests.</p>
 
     <div class="split-row">
       <div>
@@ -891,16 +914,15 @@
 
     <div class="section-heading">
       <h2>RICE delivery by stage</h2>
-      <span class="section-sub">Five consolidated stages · color follows the current open sub-task in that stage</span>
+      <span class="section-sub">Columns: RICE item · Jira status · five stages · open CRs. Expand a row for open change requests.</span>
     </div>
     <div class="filter-bar" id="riceV2FilterBar">
       <div class="filter-group">
         <span class="fg-label">Metric</span>
         <button class="chip active" data-rice-v2-filter="all">All</button>
-        <button class="chip" data-rice-v2-filter="Delayed">Delayed</button>
-        <button class="chip" data-rice-v2-filter="On Target">On Target</button>
         <button class="chip" data-rice-v2-filter="Complete">Complete</button>
-        <button class="chip" data-rice-v2-filter="High">High risk</button>
+        <button class="chip" data-rice-v2-filter="In Progress">In progress</button>
+        <button class="chip" data-rice-v2-filter="Open CRs">Open CRs</button>
       </div>
       <div class="filter-group">
         <span class="fg-label">Workstream</span>
@@ -921,12 +943,14 @@
       <span class="legend-stages">Stages: FD Functional Design · TD Tech Design · UT Unit Testing · FT Functional Testing · CP Code Promotion</span>
     </div>
 
+    <p class="scope-note">Sub-task boxes are consolidated into five stages. Each stage’s color comes from its <strong>current open Jira sub-task</strong> (the first one in that stage that is not Completed): delayed if that sub-task’s Planned Complete Date is before today, on track if it is still open and not past due. Expand a RICE item for the full sub-task list and associated change requests.</p>
+
     <details class="data-guide">
-      <summary>How to read P2 RICE Tracker v2</summary>
+      <summary>How to read P2 RICE Tracker (stages view)</summary>
       <div class="data-guide-grid">
-        <p><strong>Five stages:</strong> Functional Design (functional design, review, approval, FSD handoff) · Tech Design (technical analysis, technical design, review, approval, update technical design, build) · Unit Testing · Functional Testing (handoff, functional testing, defect resolution) · Code Promotion. Dual-track labels such as Coupa IH / ERPP roll into the same stage.</p>
+        <p><strong>Five stages:</strong> Functional Design (functional design, review, approval, FSD handoff) · Tech Design (technical analysis, technical design, review, approval, build) · Unit Testing · Functional Testing (handoff, functional testing, defect resolution) · Code Promotion (code promotion, update technical design). Dual-track labels such as Coupa IH / ERPP roll into the same stage.</p>
         <p><strong>On track vs delayed:</strong> a stage that has not started stays cream. A fully completed stage is green. Once a stage has started, its color is taken only from the current open sub-task in that stage — delayed if that sub-task is past its Planned Complete Date, on track if it is still within date, brown if it is Blocked.</p>
-        <p><strong>Expanded detail:</strong> still lists every Jira sub-task plus change requests. CR delivery is based on linked-defect closure, not CR Accepted. Overall Delayed / Complete / High risk metrics are unchanged from the original tracker.</p>
+        <p><strong>Columns:</strong> RICE item, Jira status (current open sub-task / parent status), the five stages, and open CRs. The last count is linked change requests that still have an open defect — expand the row to see those CRs first.</p>
         <p><strong>System of record:</strong> Jira remains authoritative. This is a read-only snapshot dated 23 September 2026.</p>
       </div>
     </details>
@@ -1982,10 +2006,10 @@ const RICE_V2_CANON = [
 
 const RICE_V2_GROUPS = [
   { id:"FD", code:"FD", label:"Functional Design", match:["Functional Design","Review Functional Design","Approve Functional Design","FSD Handoff"] },
-  { id:"TD", code:"TD", label:"Tech Design", match:["Technical Analysis","Technical Design","Review Technical Design","Approve Technical Design","Update Technical Design","Build"] },
+  { id:"TD", code:"TD", label:"Tech Design", match:["Technical Analysis","Technical Design","Review Technical Design","Approve Technical Design","Build"] },
   { id:"UT", code:"UT", label:"Unit Testing", match:["Unit Testing"] },
   { id:"FT", code:"FT", label:"Functional Testing", match:["Functional Testing Handoff","Functional Testing","Defect Resolution"] },
-  { id:"CP", code:"CP", label:"Code Promotion", match:["Code Promotion"] }
+  { id:"CP", code:"CP", label:"Code Promotion", match:["Code Promotion","Update Technical Design"] }
 ];
 
 function riceV2CanonicalStep(label){
@@ -2054,8 +2078,12 @@ function renderRiceV2(){
   const ws = document.getElementById("riceV2WsFilter").value;
   const crMap = Object.fromEntries((RICE_DATA.crs||[]).map(c=>[c.key,c]));
   const rows = (RICE_DATA.rice||[]).filter(r=>{
-    if(["Delayed","On Target","Complete"].includes(riceV2Filter) && r.bucket!==riceV2Filter) return false;
-    if(riceV2Filter==="High" && r.risk!=="High") return false;
+    if(riceV2Filter==="Complete" && r.bucket!=="Complete") return false;
+    if(riceV2Filter==="In Progress" && r.bucket==="Complete") return false;
+    if(riceV2Filter==="Open CRs"){
+      const openN = (r.crs||[]).map(x=>crMap[x.key]).filter(c=>c && c.delivery==="Open").length;
+      if(!(openN || r.openCr)) return false;
+    }
     if(ws && r.workstream!==ws) return false;
     const hay = `${r.id} ${r.key} ${r.summary} ${r.status} ${r.assignee}`.toLowerCase();
     return !q || hay.includes(q);
@@ -2082,7 +2110,6 @@ function renderRiceV2(){
       const boxes = groupViews.map(v=>
         `<span class="stage-pill stage-${v.state}" title="${escapeHtml(v.title)}">${escapeHtml(v.group.code)}</span>`
       ).join("");
-      const groupsDone = groupViews.filter(v=>v.state==="done").length;
       const detailId = `rice-v2-${riceShort(r.key)}`;
       const subDetails = subs.map(s=>`
         <div class="rice-v2-subitem">
@@ -2093,13 +2120,20 @@ function renderRiceV2(){
         </div>
       `).join("") || `<div class="risk-empty">No in-scope sub-tasks.</div>`;
       const linkedCrs = (r.crs||[]).map(x=>crMap[x.key]).filter(Boolean);
-      const crDetails = linkedCrs.map(c=>`
+      const openCrs = linkedCrs.filter(c=>c.delivery==="Open");
+      const otherCrs = linkedCrs.filter(c=>c.delivery!=="Open");
+      const crItem = c=>`
         <div class="rice-v2-critem">
           <div>${riceLink(c.key)}</div>
           <div><strong>${escapeHtml(c.summary)}</strong><span class="rice-muted">${escapeHtml(c.assignee||"Unassigned")}</span></div>
           <div>${ricePill(c.delivery==="No linked defect" ? "No" : c.delivery, c.delivery)}</div>
         </div>
-      `).join("") || `<div class="risk-empty">No associated change requests.</div>`;
+      `;
+      const openCrDetails = openCrs.map(crItem).join("") || `<div class="risk-empty">No open change requests.</div>`;
+      const otherCrDetails = otherCrs.length
+        ? `<h3>Other change requests · ${otherCrs.length}</h3><div class="rice-v2-crlist">${otherCrs.map(crItem).join("")}</div>`
+        : "";
+      const crCountCls = openCrs.length ? "obj-count rice-v2-crs open-crs" : "obj-count rice-v2-crs";
       return `
         <div class="rice-v2-row">
           <div class="obj-name-cell">
@@ -2107,10 +2141,9 @@ function renderRiceV2(){
             <span class="key">${riceLink(r.key)} · ${escapeHtml(r.id||"")}</span>
           </div>
           <div>${riceV2StatusPill(r.status)}</div>
-          <div>${ricePill(riceMetricClass(r.bucket),r.bucket)}</div>
           <div class="stage-row">${boxes}</div>
-          <div class="obj-count">${groupsDone} / ${RICE_V2_GROUPS.length}</div>
-          <button class="rice-expand" data-rice-v2-exp="${detailId}" aria-label="Show sub-tasks and change requests">+</button>
+          <div class="${crCountCls}" title="${openCrs.length} open change request${openCrs.length===1?"":"s"}">${openCrs.length}</div>
+          <button class="rice-expand" data-rice-v2-exp="${detailId}" aria-label="Show sub-tasks and open change requests">+</button>
         </div>
         <div class="rice-v2-detail hidden" id="${detailId}">
           <div class="rice-v2-detail-grid">
@@ -2119,8 +2152,9 @@ function renderRiceV2(){
               <div class="rice-v2-sublist">${subDetails}</div>
             </div>
             <div>
-              <h3>Associated change requests · ${linkedCrs.length}</h3>
-              <div class="rice-v2-crlist">${crDetails}</div>
+              <h3>Open change requests · ${openCrs.length}</h3>
+              <div class="rice-v2-crlist">${openCrDetails}</div>
+              ${otherCrDetails}
             </div>
           </div>
         </div>
@@ -2129,15 +2163,34 @@ function renderRiceV2(){
     return `
       <div class="workstream-block">
         <div class="workstream-head"><strong>${escapeHtml(workstream)}</strong> · ${wsRows.length} RICE item${wsRows.length===1?"":"s"} · ${pct}% of sub-tasks complete</div>
-        <div class="obj-list">${itemHtml}</div>
+        <div class="obj-list">
+          <div class="rice-v2-head" aria-hidden="true">
+            <div>RICE item</div>
+            <div>Jira status</div>
+            <div>Stages · FD · TD · UT · FT · CP</div>
+            <div class="head-crs">Open CRs</div>
+            <div></div>
+          </div>
+          ${itemHtml}
+        </div>
       </div>
     `;
   }).join("");
 }
 
 function renderRiceV2Static(){
-  document.getElementById("riceV2KpiRow").innerHTML = document.getElementById("riceKpiRow").innerHTML;
-  document.getElementById("riceV2MiniRow").innerHTML = document.getElementById("riceMiniRow").innerHTML;
+  const m = RICE_DATA.metrics;
+  document.getElementById("riceV2KpiRow").innerHTML = [
+    { label:"RICE in scope", value:m.totalRice, foot:"Wave 3 · Release 1 · P2" },
+    { label:"% Complete", value:ricePct(m.pctComplete), foot:m.complete+" of "+m.totalRice+" RICE", cls:"ok" },
+    { label:"Open CRs", value:m.crOpen+" / "+m.uniqueCrs, foot:"Defect not closed", cls:m.crOpen?"bad":"ok" },
+  ].map(c=>`
+    <div class="kpi-card ${c.cls||""}">
+      <div class="kpi-label">${c.label}</div>
+      <div class="kpi-value">${c.value}</div>
+      <div class="kpi-foot">${c.foot}</div>
+    </div>
+  `).join("");
   document.getElementById("riceV2WsTable").innerHTML = document.getElementById("riceWsTable").innerHTML;
   document.getElementById("riceV2CrSummary").innerHTML = document.getElementById("riceCrSummary").innerHTML;
   const ws = [...new Set((RICE_DATA.rice||[]).map(r=>r.workstream||"(blank)"))].sort();
@@ -2146,56 +2199,65 @@ function renderRiceV2Static(){
   renderRiceV2();
 }
 
+function riceMaxDelayDays(r){
+  let max = 0;
+  (r.delayedSubs||[]).forEach(s=>{
+    const d = Number(s.daysOverdue)||0;
+    if(d>max) max = d;
+  });
+  return max;
+}
 function delayedRiceForExec(){
   return (RICE_DATA.rice||[])
-    .filter(r=>r.bucket==="Delayed")
-    .sort((a,b)=>(b.delayedCount||0)-(a.delayedCount||0) || a.summary.localeCompare(b.summary))
-    .slice(0,4);
+    .filter(r=>r.bucket==="Delayed" || riceMaxDelayDays(r)>0)
+    .sort((a,b)=>riceMaxDelayDays(b)-riceMaxDelayDays(a) || (b.delayedCount||0)-(a.delayedCount||0) || a.summary.localeCompare(b.summary))
+    .slice(0,6);
 }
-function highRiskRiceForExec(){
-  return (RICE_DATA.rice||[])
-    .filter(r=>r.risk==="High")
-    .sort((a,b)=>(b.delayedCount||0)-(a.delayedCount||0))
-    .slice(0,4);
+function crOverdueDays(c){
+  if(!c || !c.due) return 0;
+  const due = new Date(c.due+"T00:00:00Z");
+  const asOf = (typeof RICE_AS_OF!=="undefined" && RICE_AS_OF) ? RICE_AS_OF : TODAY;
+  return Math.max(0, Math.round((asOf - due) / (1000*60*60*24)));
 }
-function openCrsForExec(){
+function longestOpenCrsForExec(){
   return (RICE_DATA.crs||[])
     .filter(c=>c.delivery==="Open")
-    .slice(0,4);
+    .sort((a,b)=>crOverdueDays(b)-crOverdueDays(a) || String(a.due||"9999").localeCompare(String(b.due||"9999")) || a.key.localeCompare(b.key))
+    .slice(0,6);
 }
 
 function renderRiceSummary(){
   const m = RICE_DATA.metrics;
+  const exec = document.querySelector(".exec-summary");
+  if(exec) exec.classList.add("rice-exec");
   document.getElementById("execSummaryTitle").textContent = "RICE Executive Summary · Release 1 - P2";
   document.getElementById("execColStatus").textContent = "Overall Status";
-  document.getElementById("execColUpcoming").textContent = "Delayed RICE";
-  document.getElementById("execColAtRisk").textContent = "High Risk";
-  document.getElementById("execColBlockers").textContent = "Open Change Requests";
+  document.getElementById("execColUpcoming").textContent = "Most delayed RICE";
+  document.getElementById("execColAtRisk").textContent = "Longest open CRs";
 
   document.getElementById("execStatusText").innerHTML =
     `<strong>${ricePct(m.pctComplete)} of RICE complete</strong> (${m.complete} of ${m.totalRice}). `
-    + `<strong>${ricePct(m.pctDelayed)} delayed</strong> (${m.delayed} items, ${m.overdueSubtasks} overdue sub-tasks). `
-    + `${m.onTarget} on target. `
-    + `<strong>${m.highRisk} high risk</strong>, ${m.watch} watch, ${m.stable} stable. `
+    + `<strong>${m.delayed} delayed</strong> (${m.overdueSubtasks} overdue sub-tasks). `
     + `${m.crOpen} of ${m.uniqueCrs} linked CRs still have an open defect.`;
 
   const delayed = delayedRiceForExec();
-  document.getElementById("execUpcomingList").innerHTML = delayed.length ? delayed.map(r=>
-    `<li><span class="sl-pill" style="margin-right:6px;">RICE</span>${escapeHtml(r.summary)} <span class="exec-meta">— ${r.delayedCount} delayed step${r.delayedCount===1?"":"s"}</span></li>`
-  ).join("") : `<li class="exec-empty">No delayed RICE items in this snapshot.</li>`;
+  document.getElementById("execUpcomingList").innerHTML = delayed.length ? delayed.map(r=>{
+    const days = riceMaxDelayDays(r);
+    const delayNote = days ? `${days}d overdue` : `${r.delayedCount} delayed step${r.delayedCount===1?"":"s"}`;
+    return `<li><span class="sl-pill" style="margin-right:6px;">${escapeHtml((r.workstream||"").split(" ")[0]||"RICE")}</span>${escapeHtml(r.summary)} <span class="exec-meta">— ${delayNote}</span></li>`;
+  }).join("") : `<li class="exec-empty">No delayed RICE items in this snapshot.</li>`;
 
-  const high = highRiskRiceForExec();
-  document.getElementById("execAtRiskList").innerHTML = high.length ? high.map(r=>
-    `<li><span class="sl-pill" style="margin-right:6px;">${escapeHtml((r.workstream||"").split(" ")[0]||"RICE")}</span>${escapeHtml(r.summary)} <span class="exec-meta at-risk">— ${escapeHtml(r.riskWhy||"High risk")}</span></li>`
-  ).join("") : `<li class="exec-empty">No high-risk RICE items in this snapshot.</li>`;
-
-  const crs = openCrsForExec();
-  document.getElementById("execBlockersList").innerHTML = crs.length ? crs.map(c=>
-    `<li>${riceLink(c.key)} ${escapeHtml(c.summary)} <span class="exec-meta">— ${c.openDefectCount} open defect${c.openDefectCount===1?"":"s"}</span></li>`
-  ).join("") : `<li class="exec-empty">No open linked CRs in this snapshot.</li>`;
+  const crs = longestOpenCrsForExec();
+  document.getElementById("execAtRiskList").innerHTML = crs.length ? crs.map(c=>{
+    const days = crOverdueDays(c);
+    const age = days ? `${days}d past due` : (c.due ? `due ${c.due}` : "open defect");
+    return `<li>${riceLink(c.key)} ${escapeHtml(c.summary)} <span class="exec-meta">— ${age}</span></li>`;
+  }).join("") : `<li class="exec-empty">No open linked CRs in this snapshot.</li>`;
 }
 
 function renderSummary(){
+  const exec = document.querySelector(".exec-summary");
+  if(exec) exec.classList.remove("rice-exec");
   document.getElementById("execSummaryTitle").textContent = "Data Conversion Executive Summary · Release 1 - P2";
   document.getElementById("execColStatus").textContent = "Overall Status";
   document.getElementById("execColUpcoming").textContent = "Next Subtasks Due";
@@ -2628,6 +2690,8 @@ function initPrepTracker(){
 
 function renderPrepSummary(){
   if(!PREP) return;
+  const exec = document.querySelector(".exec-summary");
+  if(exec) exec.classList.remove("rice-exec");
   document.getElementById("execSummaryTitle").textContent = "P2 Prep Executive Summary · Release 1 - P2";
   document.getElementById("execColStatus").textContent = "Overall Status";
   document.getElementById("execColUpcoming").textContent = "Completion by Workstream";
