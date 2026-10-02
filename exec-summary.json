@@ -1,0 +1,5 @@
+{
+  "reviewDate": "2026-10-05",
+  "p2Prep": { "status": "on_track", "items": ["Test Plan completion", "Test Case completion", "Identify P2 Testers"] },
+  "p2Rice": { "status": "at_risk", "items": ["In progress RICE Completion", "Open CR closure"] }
+}
